@@ -45,6 +45,7 @@ for rel in [
     "tools/log_iteration.py",
     "tools/pattern_recognition.py",
     "tools/repo_area_plan.py",
+    "tools/score_iteration.py",
     "tools/validate_ledger.py",
 ]:
     add(
@@ -64,7 +65,10 @@ eval_catalog = read(".agents/skills/swe-self-improve/references/eval-catalog.md"
 current_task = read("improvement/templates/current-task.md")
 eval_contract = read("improvement/templates/eval-contract.md")
 patterns = read("improvement/patterns.md")
+live_task = read("improvement/current-task.md")
 ledger_lines = read("improvement/ledger.jsonl").splitlines()
+live_task_id_match = re.search(r"^- Task ID:\s*(.+?)\s*$", live_task, re.M)
+live_task_id = live_task_id_match.group(1).strip() if live_task_id_match else None
 
 # Frontmatter / policy
 add(
@@ -186,6 +190,11 @@ add(
     "README documents the memory brief helper",
 )
 add(
+    "readme_mentions_score_helper",
+    "## iteration scoring helper" in readme.lower() and "tools/score_iteration.py" in readme,
+    "README documents the iteration scoring helper",
+)
+add(
     "readme_mentions_loop_state_helper",
     "## loop state helper" in readme.lower() and "tools/loop_state.py" in readme,
     "README documents the loop state helper",
@@ -225,6 +234,20 @@ for name, text in [
         "mentions the four-memory model explicitly",
     )
 for name, text in [
+    ("codex_skill_mentions_score_helper", codex_skill),
+    ("claude_skill_mentions_score_helper", claude_skill),
+    ("agents_mention_score_helper", agents),
+    ("claude_mention_score_helper", claude),
+    ("global_codex_mentions_score_helper", global_codex),
+    ("global_claude_mentions_score_helper", global_claude),
+    ("readme_mentions_score_helper_usage", readme),
+]:
+    add(
+        name,
+        "score_iteration.py" in text.lower() or "iteration scoring helper" in text.lower(),
+        "mentions the iteration scoring helper explicitly",
+    )
+for name, text in [
     ("codex_skill_mentions_loop_review", codex_skill),
     ("claude_skill_mentions_loop_review", claude_skill),
     ("agents_mention_loop_review", agents),
@@ -258,12 +281,12 @@ required_task_sections = [
 ]
 add(
     "current_task_has_metadata",
-    all(marker in read("improvement/current-task.md") for marker in ["- Task ID:", "- Task name:", "- Task type:"]),
+    all(marker in live_task for marker in ["- Task ID:", "- Task name:", "- Task type:"]),
     "improvement/current-task.md includes live task metadata",
 )
 add(
     "current_task_has_core_sections",
-    all(section in read("improvement/current-task.md") for section in required_task_sections),
+    all(section in live_task for section in required_task_sections),
     "improvement/current-task.md includes the core self-improvement contract sections",
 )
 add(
@@ -273,7 +296,7 @@ add(
 )
 add(
     "live_task_has_execution_plan",
-    "## Execution plan" in read("improvement/current-task.md"),
+    "## Execution plan" in live_task,
     "improvement/current-task.md includes an execution plan section",
 )
 add(
@@ -282,13 +305,18 @@ add(
     "improvement/templates/current-task.md includes optional area coverage and run budget sections",
 )
 add(
+    "eval_contract_mentions_score_helper",
+    "score_iteration.py" in eval_contract.lower(),
+    "improvement/templates/eval-contract.md mentions the iteration scoring helper",
+)
+add(
     "template_has_memory_refresh",
     "## Memory refresh" in current_task,
     "improvement/templates/current-task.md includes a memory refresh section",
 )
 add(
     "live_task_has_memory_refresh",
-    "## Memory refresh" in read("improvement/current-task.md"),
+    "## Memory refresh" in live_task,
     "improvement/current-task.md includes a memory refresh section",
 )
 
@@ -628,7 +656,7 @@ try:
         episodic_memory = payload.get("episodic_memory", {})
         memory_helper_reports_task = (
             isinstance(working_memory, dict)
-            and working_memory.get("task_id") == "2026-03-20-agent-memory-hardening"
+            and working_memory.get("task_id") == live_task_id
             and isinstance(episodic_memory, dict)
             and isinstance(episodic_memory.get("same_task_history"), list)
             and isinstance(payload.get("recommended_refresh"), list)
@@ -645,6 +673,98 @@ add(
     "memory_helper_reports_task",
     memory_helper_executes and memory_helper_reports_task,
     "memory brief helper reports the live task id and episodic-memory structure",
+)
+
+score_helper_executes = False
+score_helper_recommends_keep = False
+try:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        ledger_path = Path(tmpdir) / "ledger.jsonl"
+        ledger_path.write_text(
+            "\n".join(
+                [
+                    json.dumps(
+                        {
+                            "task_id": "demo-task",
+                            "iteration": 0,
+                            "eval_tier": "fast+full",
+                            "hypothesis": "baseline",
+                            "changes": [],
+                            "hard_gates": {"qa_verify": "pass"},
+                            "primary_metric": {
+                                "name": "quality",
+                                "baseline": 0,
+                                "value": 0,
+                                "direction": "higher_is_better",
+                            },
+                            "secondary_metrics": {"qa_checks": 80},
+                            "evidence": {"quality": "measured"},
+                            "kept": True,
+                            "summary": "baseline",
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "task_id": "demo-task",
+                            "iteration": 1,
+                            "eval_tier": "fast+full",
+                            "hypothesis": "candidate",
+                            "changes": ["README.md"],
+                            "hard_gates": {"qa_verify": "pass"},
+                            "primary_metric": {
+                                "name": "quality",
+                                "baseline": 0,
+                                "value": 1,
+                                "direction": "higher_is_better",
+                            },
+                            "secondary_metrics": {"qa_checks": 82},
+                            "evidence": {"quality": "measured"},
+                            "kept": False,
+                            "summary": "candidate",
+                        }
+                    ),
+                ]
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "score_iteration.py"),
+                "--ledger",
+                str(ledger_path),
+                "--task-id",
+                "demo-task",
+                "--candidate-iteration",
+                "1",
+                "--reference-iteration",
+                "0",
+                "--secondary-rule",
+                "qa_checks=higher_is_better@0",
+                "--format",
+                "json",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        payload = json.loads(result.stdout)
+        if isinstance(payload, dict):
+            score_helper_executes = True
+            score_helper_recommends_keep = payload.get("recommendation") == "keep"
+except (OSError, subprocess.CalledProcessError, json.JSONDecodeError):
+    score_helper_executes = False
+
+add(
+    "score_helper_executes",
+    score_helper_executes,
+    "iteration scoring helper executes and returns JSON on a synthetic ledger comparison",
+)
+add(
+    "score_helper_recommends_keep",
+    score_helper_executes and score_helper_recommends_keep,
+    "iteration scoring helper recommends keeping a clearly improved candidate",
 )
 
 loop_state_helper_executes = False
@@ -669,7 +789,7 @@ try:
     if isinstance(payload, dict):
         loop_state_helper_executes = True
         loop_state_helper_reports_task = (
-            payload.get("task_id") == "2026-03-20-agent-memory-hardening"
+            payload.get("task_id") == live_task_id
             and isinstance(payload.get("recommendation"), str)
             and isinstance(payload.get("next_iteration"), int)
             and payload.get("next_iteration") >= 1

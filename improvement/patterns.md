@@ -54,3 +54,8 @@ Recommended format:
 - Context: a self-improvement loop gets stronger when it remembers which errors happened, how they were corrected, and what rule should prevent them next time.
 - Signal: structured episodic-memory fields make it easier to turn one iteration's lesson into the next iteration's starting context instead of repeating the same avoidable mistake.
 - Caveat: keep the memory payload concise and grounded in explicit evidence; do not turn the ledger into a speculative diary.
+
+## Pattern: prefer explicit scoring rules over opaque overall scores
+- Context: keep-or-revert decisions are easier to trust when the comparison logic names the protected metrics and the allowed regressions instead of collapsing everything into one unexplained number.
+- Signal: a rule-driven scoring helper makes the fitness vector operational while still preserving clear reasons for why a candidate was kept, rejected, or flagged for manual review.
+- Caveat: scoring should support judgment, not replace it; unresolved or poorly specified metrics should stay visible instead of being guessed away.

@@ -31,6 +31,7 @@
 
 ## Fast-loop evals
 - <cheap checks run each iteration>
+- <score_iteration helper command if the repo ships one>
 - <loop-state helper command if the repo ships one>
 
 ## Full gates

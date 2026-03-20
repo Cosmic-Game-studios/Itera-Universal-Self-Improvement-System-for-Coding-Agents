@@ -74,6 +74,7 @@ Use `improvement/ledger.jsonl` for iteration logs.
 Keep logs machine-readable.
 If the repository ships helper scripts such as `tools/bootstrap_task.py` or `tools/log_iteration.py`, prefer them for scaffolding and validated ledger appends.
 If the repository ships `tools/memory_context.py`, use it before baseline and between iterations to refresh working, episodic, learned, and procedural memory.
+If the repository ships `tools/score_iteration.py`, use it to compare the candidate against the current best state before the keep-or-revert call.
 If the repository ships `tools/loop_state.py`, use it as an advisory loop-review step before continuing or stopping.
 If the repository ships a ledger validator such as `tools/validate_ledger.py`, run it after editing the ledger and before final keep.
 When an iteration teaches something reusable, record mistakes, fixes, and prevention rules in the optional `memory` object in the ledger.

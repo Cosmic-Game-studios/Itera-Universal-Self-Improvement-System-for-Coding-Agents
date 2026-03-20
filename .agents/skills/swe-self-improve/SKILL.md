@@ -150,6 +150,7 @@ For each iteration:
 
 If the repository ships `tools/loop_state.py`, use it after logging and before deciding whether to continue, replan, or stop.
 If the repository ships `tools/memory_context.py`, use it after logging to remind yourself which mistakes, fixes, and durable patterns should influence the next iteration.
+If the repository ships `tools/score_iteration.py`, use it after the relevant evals to compare the candidate against the current best state with explicit secondary-metric rules before making the keep-or-revert decision.
 
 ### Fast-loop evals vs full gates
 
@@ -244,6 +245,7 @@ Treat evaluation as a lexicographic fitness vector:
 4. **simplicity / maintainability** breaks ties
 
 This means a “faster but broken” or “slightly better but much uglier” change does not win.
+If the repository ships `tools/score_iteration.py`, use it to operationalize this fitness vector instead of relying only on prose.
 
 ## Task-type adapters
 

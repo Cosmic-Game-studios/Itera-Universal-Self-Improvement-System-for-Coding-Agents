@@ -18,6 +18,7 @@ Which guardrails matter?
 ## Commands
 List the exact commands, scripts, or manual checklist.
 Separate fast-loop and full-gate commands.
+If the repo ships `tools/score_iteration.py`, include the candidate-versus-reference scoring command here.
 
 ## Measurement notes
 - deterministic or noisy?
@@ -27,3 +28,4 @@ Separate fast-loop and full-gate commands.
 
 ## Acceptance rule
 Write the keep / discard rule in one sentence.
+If `tools/score_iteration.py` exists, keep the prose rule aligned with the helper's recommendation logic.

@@ -291,6 +291,7 @@ It should make the next decision better, not pretend to replace engineering judg
 Use the loop for any non-trivial SWE task.
 The workflow should create or update `improvement/current-task.md` with an execution plan before major edits.
 It should also refresh memory from the task contract, ledger, durable patterns, and procedural instructions before new hypotheses.
+If the repo ships `tools/score_iteration.py`, use it to compare the candidate against the current best state before the final keep-or-revert call.
 
 Recommended default iteration budget:
 
@@ -478,6 +479,33 @@ python3 tools/log_iteration.py \
   --kept true \
   --summary "Baseline entry."
 ```
+
+## Iteration scoring helper
+
+The `tools/score_iteration.py` script compares one candidate iteration against a reference state using the published fitness vector:
+
+- hard gates first
+- primary metric second
+- explicit secondary guardrails third
+- a simplicity tie-break last
+
+It is meant to make keep-or-revert decisions more operational and explainable, not to hide them behind a magic number.
+
+Run it with:
+
+```bash
+python3 tools/score_iteration.py \
+  --ledger improvement/ledger.jsonl \
+  --task-id 2026-03-20-agent-memory-hardening \
+  --candidate-iteration 1 \
+  --reference-iteration 0 \
+  --secondary-rule qa_passed_checks=higher_is_better@0 \
+  --secondary-rule unit_tests_ran=higher_is_better@0 \
+  --format summary
+```
+
+Use `--secondary-rule name=direction@allowed_regression` to declare the guardrails you actually care about.
+Anything not covered by an explicit rule is surfaced as an unscored observation instead of being silently guessed.
 
 ## Loop state helper
 
