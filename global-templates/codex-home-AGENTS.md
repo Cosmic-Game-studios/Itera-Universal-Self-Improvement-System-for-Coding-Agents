@@ -47,6 +47,7 @@ If the repository ships helper scripts for task scaffolding or validated ledger 
 If the repository ships a memory helper such as `tools/memory_context.py`, use it to refresh working memory, episodic memory, learned memory, and procedural memory before new hypotheses.
 If the repository ships an iteration scoring helper such as `tools/score_iteration.py`, use it before the final keep-or-revert decision.
 If the repository ships a loop-state helper, use it between iterations as an advisory continue/stop review.
+If the repository ships a pattern-promotion helper such as `tools/promote_patterns.py`, use it to review or apply durable lessons instead of manually duplicating ledger learnings into patterns.
 If the repository also ships a ledger validator, run it after appending iteration logs and before the final keep decision.
 When the ledger supports it, record reusable mistakes, fixes, and prevention rules instead of leaving them implicit.
 Otherwise keep short structured notes about baseline, hypotheses, results, and keep/discard decisions.

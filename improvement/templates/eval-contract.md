@@ -19,6 +19,7 @@ Which guardrails matter?
 List the exact commands, scripts, or manual checklist.
 Separate fast-loop and full-gate commands.
 If the repo ships `tools/score_iteration.py`, include the candidate-versus-reference scoring command here.
+If the repo ships `tools/promote_patterns.py`, include the promotion-review command here when the task may produce reusable durable lessons.
 
 ## Measurement notes
 - deterministic or noisy?

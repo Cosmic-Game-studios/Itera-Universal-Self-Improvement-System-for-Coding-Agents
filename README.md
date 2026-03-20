@@ -412,6 +412,27 @@ python3 tools/pattern_recognition.py --ledger improvement/ledger.jsonl --format 
 Treat the output as a suggestion layer.
 Review the proposed patterns before copying anything into `improvement/patterns.md`.
 
+## Pattern promotion helper
+
+The `tools/promote_patterns.py` script takes the next step after recognition.
+It reads `improvement/ledger.jsonl`, compares candidate durable lessons against the existing entries in `improvement/patterns.md`, skips obvious duplicates, and can append only the new reviewed candidates when you explicitly pass `--apply`.
+
+It combines two signal sources:
+
+- ranked recognition candidates from `tools/pattern_recognition.py`
+- structured episodic-memory `prevention_rules` from the ledger
+
+Run it with:
+
+```bash
+python3 tools/promote_patterns.py --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format summary
+python3 tools/promote_patterns.py --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format json
+python3 tools/promote_patterns.py --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --apply --format summary
+```
+
+Keep the default dry-run mode for review.
+Use `--apply` only when the promoted candidates are actually durable enough to join learned memory.
+
 ## Ledger contract helper
 
 The `tools/validate_ledger.py` script validates the shape and cross-entry rules of the self-improvement ledger.
@@ -533,7 +554,8 @@ Recommended approach:
 3. log a baseline in `improvement/ledger.jsonl`
 4. spend the remaining budget on small reversible hypotheses
 5. keep only iterations that improve the support surface without breaking green gates
-6. extract durable lessons into `improvement/patterns.md`
+6. review promotion candidates with `tools/promote_patterns.py`
+7. extract only the durable lessons that survive that review into `improvement/patterns.md`
 
 This repository's own ledger can be used as a concrete example of that style of self-application.
 

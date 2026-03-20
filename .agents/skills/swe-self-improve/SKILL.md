@@ -151,6 +151,7 @@ For each iteration:
 If the repository ships `tools/loop_state.py`, use it after logging and before deciding whether to continue, replan, or stop.
 If the repository ships `tools/memory_context.py`, use it after logging to remind yourself which mistakes, fixes, and durable patterns should influence the next iteration.
 If the repository ships `tools/score_iteration.py`, use it after the relevant evals to compare the candidate against the current best state with explicit secondary-metric rules before making the keep-or-revert decision.
+If the repository ships `tools/promote_patterns.py`, use it when deciding whether ledger learnings should graduate into `improvement/patterns.md`, and keep writes explicit with review or `--apply`.
 
 ### Fast-loop evals vs full gates
 
@@ -234,6 +235,7 @@ If the repository ships a validator such as `tools/validate_ledger.py`, use it o
 If the repository also ships an example object such as `improvement/templates/ledger-entry.json`, validate that too when changing the documented logging contract.
 If the repository ships `tools/log_iteration.py`, prefer it for appending validated entries instead of hand-editing JSONL.
 If the repository ships `tools/memory_context.py`, use it to turn the ledger and patterns back into a usable brief before the next hypothesis or task.
+If the repository ships `tools/promote_patterns.py`, use it to review candidate durable lessons before manually editing `improvement/patterns.md`.
 
 ## Fitness vector
 
@@ -311,6 +313,7 @@ Do not claim strong improvement without some evaluation.
 
 If you learn something that is likely to matter again in this repository, append a concise note to `improvement/patterns.md`.
 Only store durable lessons, not ephemeral experiment noise.
+If the repository ships `tools/promote_patterns.py`, prefer it as the first pass for extracting reviewed candidates from the ledger before hand-editing `improvement/patterns.md`.
 
 Good durable lesson format:
 

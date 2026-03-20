@@ -26,6 +26,7 @@
 - Learned memory: `improvement/patterns.md`
 - Procedural memory: `AGENTS.md` / `CLAUDE.md` / `SKILL.md`
 - Refresh command: <run `tools/memory_context.py` here if the repo ships one>
+- Promotion command: <run `tools/promote_patterns.py` here if the repo ships one>
 - Mistakes to avoid:
 - Reusable fixes:
 

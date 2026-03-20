@@ -1,91 +1,100 @@
 # Current task
 
-- Task ID: 2026-03-20-iteration-scoring-hardening
-- Task name: Operationalize iteration scoring for keep-or-revert decisions
+- Task ID: 2026-03-20-memory-promotion-hardening
+- Task name: Operationalize durable memory promotion from the ledger
 - Task type: feature
-- Desired outcome: Add a deterministic helper that compares a candidate iteration against the current best state using hard gates, the primary metric, secondary guardrails, and a simplicity tie-break so keep-or-revert decisions become more operational.
+- Desired outcome: Add a deterministic helper that turns recurring ledger learnings into candidate or applied durable patterns for improvement/patterns.md, with transparent dedupe instead of manual copy-paste.
 - Non-goals:
-- Replace engineering judgment with an opaque numeric score.
-- Redesign the ledger contract around a completely new schema.
+- Blindly append every ledger memory note into patterns.md without review.
 - Introduce third-party Python dependencies.
+- Replace the existing pattern_recognition helper instead of building on it.
 
 ## Execution plan
-- Rewrite the live task contract for iteration scoring and capture a fresh baseline.
-- Implement a score_iteration helper that compares ledger entries with explicit secondary-metric rules and a simplicity tie-break.
-- Add regression tests for hard-gate failures, primary-metric outcomes, secondary regressions, and neutral-primary tie-breaks.
-- Wire the scoring helper into the skill docs, templates, README, and QA.
+- Rewrite the live task contract for memory promotion and capture a fresh baseline.
+- Implement a promote_patterns helper with dry-run output, existing-pattern dedupe, and explicit apply mode.
+- Add regression tests for candidate generation, dedupe behavior, and apply mode.
+- Wire the new helper into docs, workflow guidance, and repository QA.
 - Run full verification, log the kept result, review the final diff, and publish the improved state.
 
 ## Optional: Area coverage plan
-- <root docs / skills / tools / qa / improvement / templates / other areas>
+- tools
+- qa
+- docs-and-skill-guidance
+- improvement-memory-artifacts
 
 ## Optional: Run budget allocation
-- <area>: <planned runs>
+- tools: 1
+- qa: 1
+- docs-and-skill-guidance: 0
+- improvement-memory-artifacts: 0
 
 ## Constraints
 - Use only the Python standard library.
-- Keep the scoring logic transparent and reason-oriented instead of pretending a single scalar can fully replace judgment.
-- Stay backward-compatible with the current ledger history and existing workflow artifacts.
-- Prefer explicit secondary-metric rules over hidden heuristics.
+- Keep promotion transparent: dry-run by default and explicit apply mode for writing patterns.md.
+- Stay compatible with the current ledger schema and existing durable-pattern format.
+- Prefer promoting concise reusable lessons over noisy task-specific trivia.
 
 ## Memory refresh
-- Working memory: `improvement/current-task.md`
-- Episodic memory: `improvement/ledger.jsonl`
-- Learned memory: `improvement/patterns.md`
-- Procedural memory: `AGENTS.md` / `CLAUDE.md` / `SKILL.md`
-- Refresh command: `python3 tools/memory_context.py --task improvement/current-task.md --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format summary`
-- Mistakes to avoid: keep-or-revert logic is still mostly prose, so a helper that hides why a candidate won or lost would recreate the same ambiguity in code form.
-- Reusable fixes: prefer explicit comparison rules and reasoned output over a single opaque scalar, just like the memory helper kept its advice grounded in visible artifacts.
+- Working memory: improvement/current-task.md
+- Episodic memory: improvement/ledger.jsonl
+- Learned memory: improvement/patterns.md
+- Procedural memory: AGENTS.md / CLAUDE.md / SKILL.md
+- Refresh command: python3 tools/memory_context.py --task improvement/current-task.md --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format summary
+- Promotion command: python3 tools/promote_patterns.py --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format summary
+- Mistakes to avoid: promoting one-off notes into durable patterns would recreate the same ambiguity we just removed from scoring and memory logging.
+- Mistakes to avoid: silently rewriting `improvement/patterns.md` would make the learned-memory layer harder to trust and review.
+- Reusable fixes: reuse the existing pattern-recognition signals and the structured `memory` payload from the ledger instead of inventing a second heuristic universe.
+- Reusable fixes: keep the helper dry-run by default, apply only on explicit request, and dedupe against existing durable pattern titles before writing.
 
 ## Fast-loop evals
 - python3 -m unittest discover -s qa -p 'test_*.py'
 - python3 qa/verify_skill_system.py
-- python3 tools/score_iteration.py --ledger improvement/ledger.jsonl --task-id 2026-03-20-agent-memory-hardening --candidate-iteration 1 --reference-iteration 0 --secondary-rule qa_passed_checks=higher_is_better@0 --secondary-rule unit_tests_ran=higher_is_better@0 --format summary
+- python3 tools/promote_patterns.py --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format summary
 
 ## Full gates
-- Verify that the repository ships a usable scoring helper, green tests, green QA, and coherent docs for lexicographic keep-or-revert decisions.
+- Verify that the repository ships a usable promotion helper, green tests, green QA, and coherent docs for candidate/apply memory promotion.
 - python3 -m unittest discover -s qa -p 'test_*.py'
 - python3 qa/verify_skill_system.py
-- python3 tools/score_iteration.py --ledger improvement/ledger.jsonl --task-id 2026-03-20-agent-memory-hardening --candidate-iteration 1 --reference-iteration 0 --secondary-rule qa_passed_checks=higher_is_better@0 --secondary-rule unit_tests_ran=higher_is_better@0 --format json
-- rg -n 'score_iteration|iteration scoring|fitness vector|lexicographic|simplicity tie-break|secondary-rule' README.md .agents/skills/swe-self-improve/SKILL.md .claude/skills/swe-self-improve/SKILL.md AGENTS.md CLAUDE.md global-templates improvement/templates qa tools
+- python3 tools/promote_patterns.py --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format json
+- rg -n 'promote_patterns|memory promotion|pattern promotion|durable pattern promotion' README.md .agents/skills/swe-self-improve/SKILL.md .claude/skills/swe-self-improve/SKILL.md AGENTS.md CLAUDE.md global-templates improvement/templates qa tools
 
 ## Primary metric
-- Name: iteration scoring helper is operationally available across the workflow stack
+- Name: memory_promotion_helper_operationally_available
 - Direction: higher_is_better
-- Baseline: the repository describes a fitness vector and keep rule, but it does not yet ship a dedicated helper that scores one iteration against another with explicit guardrails and a transparent recommendation.
-- Target: the repository ships a deterministic scoring helper, regression tests, documentation, and QA so keep-or-revert decisions can be operationalized instead of remaining prose-only.
+- Baseline: the repository can suggest pattern candidates with pattern_recognition.py, but it does not yet ship a helper that dedupes against patterns.md and promotes durable ledger learnings in a controlled way.
+- Target: the repository ships a deterministic memory-promotion helper, regression tests, docs, and QA so durable ledger learnings can be promoted into patterns.md without manual copy-paste churn.
 
 ## Secondary metrics
 - QA verifier remains green
 - Existing unit tests remain green
-- Ledger compatibility remains intact
-- Scoring remains explainable instead of opaque
+- Pattern dedupe stays deterministic
+- Promotion output remains transparent instead of silently mutating patterns.md
 
 ## Evaluation commands
 ```bash
 python3 -m unittest discover -s qa -p 'test_*.py'
 python3 qa/verify_skill_system.py
-python3 tools/score_iteration.py --ledger improvement/ledger.jsonl --task-id 2026-03-20-agent-memory-hardening --candidate-iteration 1 --reference-iteration 0 --secondary-rule qa_passed_checks=higher_is_better@0 --secondary-rule unit_tests_ran=higher_is_better@0 --format summary
-python3 tools/score_iteration.py --ledger improvement/ledger.jsonl --task-id 2026-03-20-agent-memory-hardening --candidate-iteration 1 --reference-iteration 0 --secondary-rule qa_passed_checks=higher_is_better@0 --secondary-rule unit_tests_ran=higher_is_better@0 --format json
-rg -n 'score_iteration|iteration scoring|fitness vector|lexicographic|simplicity tie-break|secondary-rule' README.md .agents/skills/swe-self-improve/SKILL.md .claude/skills/swe-self-improve/SKILL.md AGENTS.md CLAUDE.md global-templates improvement/templates qa tools
+python3 tools/promote_patterns.py --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format summary
+python3 tools/promote_patterns.py --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format json
+rg -n 'promote_patterns|memory promotion|pattern promotion|durable pattern promotion' README.md .agents/skills/swe-self-improve/SKILL.md .claude/skills/swe-self-improve/SKILL.md AGENTS.md CLAUDE.md global-templates improvement/templates qa tools
 ```
 
 ## Measurement notes
 - deterministic or noisy: deterministic
 - repeated runs needed: one baseline and one kept implementation run should be sufficient if the helper, docs, and QA land coherently
-- fixed seed / fixed input / fixed budget: fixed repository contents and explicit ledger entries as input
-- proxy limitations: doc scans are structural proxies and must stay paired with helper execution
+- fixed seed / fixed input / fixed budget: fixed repository contents and explicit ledger plus patterns files as input
+- proxy limitations: README and doc scans are structural proxies and must stay paired with helper execution
 
 ## Iteration budget
 - Max iterations: 2
 - Max task time: one focused implementation pass and one final verification pass
 
 ## Rollback / checkpoint strategy
-- Revert any scoring rule that hides why a candidate won or lost.
-- Revert any contract change that forces old ledger entries into a new incompatible shape.
+- Revert any promotion logic that silently rewrites or duplicates durable patterns.
+- Revert any candidate generation rule that turns weak one-off notes into durable lessons.
 
 ## Stop conditions
-- The repository ships an executable iteration scoring helper.
+- The repository ships an executable memory-promotion helper.
 - Tests and QA verify the helper and its docs.
-- The helper keeps the decision logic explainable and aligned with the published keep rule.
+- The helper keeps promotion transparent, deduplicated, and aligned with the published durable-pattern format.
 - Final verification passes cleanly.

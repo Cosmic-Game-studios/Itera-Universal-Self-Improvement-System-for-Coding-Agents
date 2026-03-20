@@ -44,6 +44,7 @@ for rel in [
     "tools/loop_state.py",
     "tools/log_iteration.py",
     "tools/pattern_recognition.py",
+    "tools/promote_patterns.py",
     "tools/repo_area_plan.py",
     "tools/score_iteration.py",
     "tools/validate_ledger.py",
@@ -170,6 +171,11 @@ add(
     "README documents the pattern recognition helper",
 )
 add(
+    "readme_mentions_pattern_promotion_helper",
+    "## pattern promotion helper" in readme.lower() and "tools/promote_patterns.py" in readme,
+    "README documents the pattern promotion helper",
+)
+add(
     "readme_mentions_ledger_helper",
     "## ledger contract helper" in readme.lower() and "tools/validate_ledger.py" in readme,
     "README documents the ledger contract helper",
@@ -248,6 +254,20 @@ for name, text in [
         "mentions the iteration scoring helper explicitly",
     )
 for name, text in [
+    ("codex_skill_mentions_pattern_promotion", codex_skill),
+    ("claude_skill_mentions_pattern_promotion", claude_skill),
+    ("agents_mention_pattern_promotion", agents),
+    ("claude_mention_pattern_promotion", claude),
+    ("global_codex_mentions_pattern_promotion", global_codex),
+    ("global_claude_mentions_pattern_promotion", global_claude),
+    ("readme_mentions_pattern_promotion_usage", readme),
+]:
+    add(
+        name,
+        "promote_patterns.py" in text.lower() or "pattern promotion helper" in text.lower(),
+        "mentions the pattern promotion helper explicitly",
+    )
+for name, text in [
     ("codex_skill_mentions_loop_review", codex_skill),
     ("claude_skill_mentions_loop_review", claude_skill),
     ("agents_mention_loop_review", agents),
@@ -315,9 +335,19 @@ add(
     "improvement/templates/current-task.md includes a memory refresh section",
 )
 add(
+    "template_mentions_promotion_command",
+    "promotion command" in current_task.lower() and "promote_patterns.py" in current_task.lower(),
+    "improvement/templates/current-task.md includes a promotion-command reminder",
+)
+add(
     "live_task_has_memory_refresh",
     "## Memory refresh" in live_task,
     "improvement/current-task.md includes a memory refresh section",
+)
+add(
+    "eval_contract_mentions_pattern_promotion",
+    "promote_patterns.py" in eval_contract.lower(),
+    "improvement/templates/eval-contract.md mentions the pattern promotion helper",
 )
 
 # Ledger integrity
@@ -389,6 +419,46 @@ add(
     "pattern_helper_returns_suggestions",
     pattern_tool_ok and pattern_tool_has_suggestions and pattern_tool_matches_ledger,
     "pattern helper returns at least one suggestion and reports the live ledger size correctly",
+)
+
+promotion_helper_ok = False
+promotion_helper_reports_counts = False
+try:
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "tools" / "promote_patterns.py"),
+            "--ledger",
+            str(ROOT / "improvement" / "ledger.jsonl"),
+            "--patterns",
+            str(ROOT / "improvement" / "patterns.md"),
+            "--format",
+            "json",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    promotion_payload = json.loads(result.stdout)
+    if isinstance(promotion_payload, dict):
+        promotion_helper_ok = True
+        promotion_helper_reports_counts = (
+            promotion_payload.get("total_entries") == len(ledger_payloads)
+            and isinstance(promotion_payload.get("promotable_patterns"), list)
+            and isinstance(promotion_payload.get("skipped_patterns"), list)
+        )
+except (OSError, subprocess.CalledProcessError, json.JSONDecodeError):
+    promotion_helper_ok = False
+
+add(
+    "pattern_promotion_helper_executes",
+    promotion_helper_ok,
+    "pattern promotion helper executes and returns JSON on the live ledger and patterns",
+)
+add(
+    "pattern_promotion_helper_reports_counts",
+    promotion_helper_ok and promotion_helper_reports_counts,
+    "pattern promotion helper reports live entry counts plus promotable and skipped candidate lists",
 )
 
 repo_area_planner_ok = False
@@ -765,6 +835,103 @@ add(
     "score_helper_recommends_keep",
     score_helper_executes and score_helper_recommends_keep,
     "iteration scoring helper recommends keeping a clearly improved candidate",
+)
+
+promotion_apply_executes = False
+promotion_apply_writes_patterns = False
+try:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        ledger_path = Path(tmpdir) / "ledger.jsonl"
+        patterns_path = Path(tmpdir) / "patterns.md"
+        ledger_path.write_text(
+            "\n".join(
+                [
+                    json.dumps(
+                        {
+                            "task_id": "demo-memory-task",
+                            "iteration": 0,
+                            "eval_tier": "fast+full",
+                            "hypothesis": "baseline",
+                            "changes": [],
+                            "hard_gates": {"qa_verify": "pass"},
+                            "primary_metric": {
+                                "name": "quality",
+                                "baseline": 0,
+                                "value": 0,
+                                "direction": "higher_is_better",
+                            },
+                            "secondary_metrics": {"qa_checks": 80},
+                            "evidence": {"quality": "measured", "qa_checks": "measured"},
+                            "kept": True,
+                            "summary": "baseline",
+                        }
+                    ),
+                    json.dumps(
+                        {
+                            "task_id": "demo-memory-task",
+                            "iteration": 1,
+                            "eval_tier": "fast+full",
+                            "hypothesis": "candidate",
+                            "changes": ["tools/log_iteration.py"],
+                            "hard_gates": {"qa_verify": "pass"},
+                            "primary_metric": {
+                                "name": "quality",
+                                "baseline": 0,
+                                "value": 1,
+                                "direction": "higher_is_better",
+                            },
+                            "secondary_metrics": {"qa_checks": 82},
+                            "evidence": {"quality": "measured", "qa_checks": "measured"},
+                            "memory": {
+                                "mistakes": ["Forgot to validate the ledger after appending entries."],
+                                "fixes": ["Ran the validator immediately after logging the iteration."],
+                                "prevention_rules": ["Always validate the ledger after appending iteration logs."],
+                            },
+                            "kept": True,
+                            "summary": "candidate",
+                        }
+                    ),
+                ]
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        patterns_path.write_text("# Durable repository patterns\n", encoding="utf-8")
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "promote_patterns.py"),
+                "--ledger",
+                str(ledger_path),
+                "--patterns",
+                str(patterns_path),
+                "--apply",
+                "--format",
+                "json",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        payload = json.loads(result.stdout)
+        promotion_apply_executes = isinstance(payload, dict) and isinstance(payload.get("applied_patterns"), list)
+        updated_patterns = patterns_path.read_text(encoding="utf-8")
+        promotion_apply_writes_patterns = (
+            "always validate the ledger after appending iteration logs" in updated_patterns.lower()
+            and len(payload.get("applied_patterns", [])) >= 1
+        )
+except (OSError, subprocess.CalledProcessError, json.JSONDecodeError):
+    promotion_apply_executes = False
+
+add(
+    "pattern_promotion_apply_executes",
+    promotion_apply_executes,
+    "pattern promotion helper supports explicit apply mode on a synthetic ledger/patterns pair",
+)
+add(
+    "pattern_promotion_apply_writes_patterns",
+    promotion_apply_executes and promotion_apply_writes_patterns,
+    "pattern promotion helper appends a promoted durable pattern during explicit apply mode",
 )
 
 loop_state_helper_executes = False

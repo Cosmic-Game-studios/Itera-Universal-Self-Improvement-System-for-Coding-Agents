@@ -59,3 +59,8 @@ Recommended format:
 - Context: keep-or-revert decisions are easier to trust when the comparison logic names the protected metrics and the allowed regressions instead of collapsing everything into one unexplained number.
 - Signal: a rule-driven scoring helper makes the fitness vector operational while still preserving clear reasons for why a candidate was kept, rejected, or flagged for manual review.
 - Caveat: scoring should support judgment, not replace it; unresolved or poorly specified metrics should stay visible instead of being guessed away.
+
+## Pattern: promote ledger learnings through an explicit deduped review step
+- Context: working memory, episodic memory, and learned memory drift apart quickly when durable lessons are copied over from the ledger by hand.
+- Signal: a promotion helper that combines recognition signals, structured prevention rules, and duplicate filtering makes it easier to grow `improvement/patterns.md` without adding obvious repeats or manual copy-paste churn.
+- Caveat: promotion is still a review step; single-episode rules and generic file-area suggestions should not be treated as durable learned memory without judgment.
