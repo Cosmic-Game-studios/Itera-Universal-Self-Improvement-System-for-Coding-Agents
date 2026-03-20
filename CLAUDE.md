@@ -67,6 +67,7 @@ Examples: failing test, benchmark, build check, accessibility check, visual snap
 ## Logging
 
 Use `improvement/ledger.jsonl` for structured iteration logs.
+If the repository ships helper scripts such as `tools/bootstrap_task.py` or `tools/log_iteration.py`, prefer them for scaffolding and validated ledger appends.
 If the repository ships a ledger validator such as `tools/validate_ledger.py`, run it after editing the ledger and before final keep.
 Use `improvement/patterns.md` only for durable lessons that are likely to matter again.
 

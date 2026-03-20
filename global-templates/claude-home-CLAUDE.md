@@ -41,4 +41,5 @@ If a task has no credible evaluation, create the smallest one that makes progres
 ## Logging
 
 When the repository contains `improvement/` templates or a self-improvement skill, use them.
+If the repository ships helper scripts for task scaffolding or validated ledger appends, prefer them over ad hoc manual edits.
 If the repository also ships a ledger validator, run it after appending iteration logs and before the final keep decision.

@@ -72,6 +72,7 @@ Write or update `improvement/current-task.md` with:
 13. stop conditions
 
 Use the template in `improvement/templates/current-task.md` if present.
+If the repository ships `tools/bootstrap_task.py`, use it when that is the fastest way to scaffold a clean task contract from the template shape.
 
 Planning is mandatory for non-trivial use of this skill.
 Before baseline or meaningful edits, create a short execution plan.
@@ -197,6 +198,7 @@ Prefer measured evidence whenever possible.
 
 If the repository ships a validator such as `tools/validate_ledger.py`, use it on `improvement/ledger.jsonl` after appending entries.
 If the repository also ships an example object such as `improvement/templates/ledger-entry.json`, validate that too when changing the documented logging contract.
+If the repository ships `tools/log_iteration.py`, prefer it for appending validated entries instead of hand-editing JSONL.
 
 ## Fitness vector
 

@@ -136,6 +136,7 @@ Copy these into your repository:
 - `AGENTS.md`
 - `.agents/skills/swe-self-improve/`
 - `improvement/`
+- `tools/`
 
 Recommended explicit invocation:
 
@@ -150,6 +151,7 @@ Copy these into your repository:
 - `CLAUDE.md`
 - `.claude/skills/swe-self-improve/`
 - `improvement/`
+- `tools/`
 
 Recommended explicit invocation:
 
@@ -391,6 +393,55 @@ python3 tools/validate_ledger.py --ledger improvement/templates/ledger-entry.jso
 ```
 
 That last command validates the shipped example entry in `improvement/templates/ledger-entry.json`, which helps keep the documentation example aligned with the live ledger contract.
+
+## Task bootstrap helper
+
+The `tools/bootstrap_task.py` script scaffolds a ready-to-edit `improvement/current-task.md` from CLI arguments.
+It is useful when you want the skill to start from a clean, repeatable task contract instead of retyping the same section structure by hand.
+
+Run it with:
+
+```bash
+python3 tools/bootstrap_task.py \
+  --task-id 2026-03-20-demo-task \
+  --task-name "Demo task" \
+  --task-type feature \
+  --desired-outcome "Ship a clean task contract" \
+  --plan-step "Draft the contract" \
+  --fast-eval "python3 qa/verify_skill_system.py" \
+  --full-gate "python3 qa/verify_skill_system.py" \
+  --primary-metric-name quality \
+  --primary-metric-direction higher_is_better \
+  --primary-metric-baseline "not started" \
+  --primary-metric-target "scaffolded" \
+  --output improvement/current-task.md \
+  --overwrite
+```
+
+## Iteration logging helper
+
+The `tools/log_iteration.py` script appends one validated entry to `improvement/ledger.jsonl` and re-validates the whole ledger before keeping the change on disk.
+It helps the skill avoid hand-written JSONL mistakes while still keeping the log explicit and reviewable.
+
+Run it with:
+
+```bash
+python3 tools/log_iteration.py \
+  --ledger improvement/ledger.jsonl \
+  --task-id 2026-03-20-demo-task \
+  --iteration 0 \
+  --eval-tier fast+full \
+  --hypothesis "Baseline" \
+  --hard-gate qa_verify=pass \
+  --primary-metric-name quality \
+  --primary-metric-baseline 0 \
+  --primary-metric-value 0 \
+  --primary-metric-direction higher_is_better \
+  --secondary-metric qa_checks=80 \
+  --evidence qa_verify=measured \
+  --kept true \
+  --summary "Baseline entry."
+```
 
 ## 20-run self-application
 

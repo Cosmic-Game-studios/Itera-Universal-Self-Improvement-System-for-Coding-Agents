@@ -5,6 +5,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 checks: list[tuple[str, bool, str]] = []
@@ -38,6 +39,8 @@ for rel in [
     "improvement/templates/current-task.md",
     "improvement/templates/eval-contract.md",
     "improvement/templates/ledger-entry.json",
+    "tools/bootstrap_task.py",
+    "tools/log_iteration.py",
     "tools/pattern_recognition.py",
     "tools/repo_area_plan.py",
     "tools/validate_ledger.py",
@@ -164,6 +167,16 @@ add(
     "readme_mentions_ledger_helper",
     "## ledger contract helper" in readme.lower() and "tools/validate_ledger.py" in readme,
     "README documents the ledger contract helper",
+)
+add(
+    "readme_mentions_bootstrap_helper",
+    "## task bootstrap helper" in readme.lower() and "tools/bootstrap_task.py" in readme,
+    "README documents the task bootstrap helper",
+)
+add(
+    "readme_mentions_log_iteration_helper",
+    "## iteration logging helper" in readme.lower() and "tools/log_iteration.py" in readme,
+    "README documents the iteration logging helper",
 )
 add(
     "readme_mentions_20_run_self_application",
@@ -392,6 +405,138 @@ add(
     "ledger_validator_template_passes",
     ledger_validator_template_ok,
     "ledger validator passes on the example ledger-entry template",
+)
+
+bootstrap_helper_executes = False
+bootstrap_helper_writes_contract = False
+try:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        output = Path(tmpdir) / "current-task.md"
+        subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "bootstrap_task.py"),
+                "--task-id",
+                "2026-03-20-demo-task",
+                "--task-name",
+                "Demo task",
+                "--task-type",
+                "feature",
+                "--desired-outcome",
+                "Scaffold a task contract",
+                "--plan-step",
+                "Draft the contract",
+                "--fast-eval",
+                "python3 qa/verify_skill_system.py",
+                "--full-gate",
+                "python3 qa/verify_skill_system.py",
+                "--primary-metric-name",
+                "quality",
+                "--primary-metric-direction",
+                "higher_is_better",
+                "--primary-metric-baseline",
+                "not started",
+                "--primary-metric-target",
+                "scaffolded",
+                "--output",
+                str(output),
+                "--overwrite",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        bootstrap_helper_executes = output.exists()
+        if bootstrap_helper_executes:
+            generated = output.read_text(encoding="utf-8")
+            bootstrap_helper_writes_contract = all(
+                token in generated
+                for token in [
+                    "- Task ID: 2026-03-20-demo-task",
+                    "## Execution plan",
+                    "## Full gates",
+                    "## Evaluation commands",
+                    "python3 qa/verify_skill_system.py",
+                ]
+            )
+except (OSError, subprocess.CalledProcessError):
+    bootstrap_helper_executes = False
+
+add(
+    "bootstrap_helper_executes",
+    bootstrap_helper_executes,
+    "task bootstrap helper executes and writes an output file",
+)
+add(
+    "bootstrap_helper_writes_contract",
+    bootstrap_helper_executes and bootstrap_helper_writes_contract,
+    "task bootstrap helper writes the expected task-contract sections",
+)
+
+log_iteration_helper_executes = False
+log_iteration_helper_validates = False
+try:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        ledger_path = Path(tmpdir) / "ledger.jsonl"
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "log_iteration.py"),
+                "--ledger",
+                str(ledger_path),
+                "--task-id",
+                "demo-task",
+                "--iteration",
+                "0",
+                "--eval-tier",
+                "fast+full",
+                "--hypothesis",
+                "Baseline",
+                "--hard-gate",
+                "qa_verify=pass",
+                "--primary-metric-name",
+                "quality",
+                "--primary-metric-baseline",
+                "0",
+                "--primary-metric-value",
+                "0",
+                "--primary-metric-direction",
+                "higher_is_better",
+                "--secondary-metric",
+                "qa_checks=80",
+                "--evidence",
+                "qa_verify=measured",
+                "--kept",
+                "true",
+                "--summary",
+                "Baseline entry.",
+                "--format",
+                "json",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        payload = json.loads(result.stdout)
+        log_iteration_helper_executes = ledger_path.exists()
+        report = payload.get("ledger_report", {}) if isinstance(payload, dict) else {}
+        log_iteration_helper_validates = (
+            isinstance(report, dict)
+            and report.get("valid") is True
+            and report.get("entry_count") == 1
+        )
+except (OSError, subprocess.CalledProcessError, json.JSONDecodeError):
+    log_iteration_helper_executes = False
+
+add(
+    "log_iteration_helper_executes",
+    log_iteration_helper_executes,
+    "iteration logging helper executes and writes a ledger file",
+)
+add(
+    "log_iteration_helper_validates",
+    log_iteration_helper_executes and log_iteration_helper_validates,
+    "iteration logging helper appends a validated entry and reports a valid ledger",
 )
 
 # Durable patterns

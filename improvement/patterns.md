@@ -39,3 +39,8 @@ Recommended format:
 - Context: the ledger is the repository's memory for baselines, kept iterations, and durable pattern extraction.
 - Signal: the workflow becomes safer when the live ledger and its example template are both validated by a dedicated tool instead of only being described in prose.
 - Caveat: keep the validator strict on contract shape, but avoid overfitting it to one narrow metric style.
+
+## Pattern: script the repetitive workflow edges
+- Context: task scaffolding and ledger appends are repeated in almost every self-improvement run.
+- Signal: small support scripts reduce copy-paste mistakes while keeping the contract explicit and human-reviewable.
+- Caveat: helpers should stay thin wrappers around the documented workflow, not opaque automation that hides decisions.

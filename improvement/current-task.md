@@ -1,47 +1,49 @@
 # Current task
 
-- Task ID: 2026-03-20-ledger-contract-hardening
-- Task name: Harden the self-improvement ledger contract
-- Task type: refactor
-- Desired outcome: Upgrade the skill system so `improvement/ledger.jsonl` is enforced by a real validator tool, covered by tests, wired into QA, and documented as part of the standard keep-or-revert workflow.
-- Non-goals: Rewrite historical ledger entries, add third-party dependencies, or make the ledger contract so rigid that normal SWE tasks can no longer log reasonable measured results.
+- Task ID: 2026-03-20-python-support-scripts
+- Task name: Add Python support scripts for the self-improvement loop
+- Task type: feature
+- Desired outcome: Extend the repository with practical Python helpers that support the `swe-self-improve` workflow directly, especially for bootstrapping `improvement/current-task.md` and appending validated iteration records to `improvement/ledger.jsonl`.
+- Non-goals: Build a fully autonomous orchestration system, add third-party dependencies, or replace the existing explicit keep-or-revert workflow with opaque automation.
 
 ## Execution plan
-1. Rewrite the live task contract for ledger-contract hardening and log a fresh baseline.
-2. Implement a standard-library ledger validation helper that checks the documented logging contract and reports useful failures.
-3. Add regression tests and QA coverage so both the live ledger and the example template are validated mechanically.
-4. Propagate the stronger ledger-validation rule through the skills, fallback docs, templates, README, and durable patterns.
+1. Rewrite the live task contract for the support-script expansion and log a fresh baseline.
+2. Implement Python helpers for task bootstrapping and iteration logging, reusing the existing ledger validator where possible.
+3. Add regression tests and QA checks so the new helpers are verified mechanically.
+4. Document the helpers in the skill docs, fallback docs, templates, and README so they become part of the supported workflow.
 5. Run full verification, log the kept result, review the final diff, and publish the improved state.
 
 ## Constraints
 - Use only the Python standard library.
-- Keep the validator compatible with the repository's existing ledger history.
-- Strengthen the contract without turning the workflow into heavy ceremony.
-- Keep Codex, Claude, fallback docs, and README wording aligned.
+- Keep the helpers deterministic and compatible with the current repository structure.
+- Reuse existing validation logic instead of creating duplicate contract rules.
+- Preserve the explicit human-readable workflow instead of hiding key decisions behind magic defaults.
 
 ## Fast-loop evals
 - `python3 -m unittest discover -s qa -p 'test_*.py'`
 - `python3 qa/verify_skill_system.py`
-- `python3 tools/validate_ledger.py --ledger improvement/ledger.jsonl --format summary`
+- `python3 tools/bootstrap_task.py --task-id demo-task --task-name "Demo task" --task-type feature --desired-outcome "Demo outcome" --plan-step "Draft the contract" --fast-eval "python3 qa/verify_skill_system.py" --full-gate "python3 qa/verify_skill_system.py" --primary-metric-name quality --primary-metric-direction higher_is_better --primary-metric-baseline "not started" --primary-metric-target "scaffolded" --output /tmp/swe-self-improve-demo-current-task.md --overwrite`
+- `python3 tools/log_iteration.py --ledger /tmp/swe-self-improve-demo-ledger.jsonl --task-id demo-task --iteration 0 --eval-tier fast+full --hypothesis "Baseline" --hard-gate qa_verify=pass --primary-metric-name quality --primary-metric-baseline 0 --primary-metric-value 0 --primary-metric-direction higher_is_better --secondary-metric qa_checks=80 --evidence qa_verify=measured --kept true --summary "Baseline entry."`
 
 ## Full gates
-- Verify the live ledger and the example ledger template both satisfy the documented contract, while the rest of the repository remains green.
+- Verify the new helpers execute successfully, the repo stays green, and the workflow/docs now advertise the new support scripts coherently.
 - `python3 -m unittest discover -s qa -p 'test_*.py'`
 - `python3 qa/verify_skill_system.py`
-- `python3 tools/validate_ledger.py --ledger improvement/ledger.jsonl --format json`
-- `python3 tools/validate_ledger.py --ledger improvement/templates/ledger-entry.json --single-json --format json`
-- `rg -n "validate_ledger|ledger contract|ledger-entry.json|Evidence labels" README.md .agents/skills/swe-self-improve/SKILL.md .claude/skills/swe-self-improve/SKILL.md AGENTS.md CLAUDE.md global-templates improvement/templates qa/verify_skill_system.py`
+- `python3 tools/bootstrap_task.py --task-id demo-task --task-name "Demo task" --task-type feature --desired-outcome "Demo outcome" --plan-step "Draft the contract" --fast-eval "python3 qa/verify_skill_system.py" --full-gate "python3 qa/verify_skill_system.py" --primary-metric-name quality --primary-metric-direction higher_is_better --primary-metric-baseline "not started" --primary-metric-target "scaffolded" --output /tmp/swe-self-improve-demo-current-task.md --overwrite`
+- `python3 tools/log_iteration.py --ledger /tmp/swe-self-improve-demo-ledger.jsonl --task-id demo-task --iteration 0 --eval-tier fast+full --hypothesis "Baseline" --hard-gate qa_verify=pass --primary-metric-name quality --primary-metric-baseline 0 --primary-metric-value 0 --primary-metric-direction higher_is_better --secondary-metric qa_checks=80 --evidence qa_verify=measured --kept true --summary "Baseline entry."`
+- `python3 tools/validate_ledger.py --ledger /tmp/swe-self-improve-demo-ledger.jsonl --format json`
+- `rg -n "bootstrap_task.py|log_iteration.py|support scripts|helper" README.md .agents/skills/swe-self-improve/SKILL.md .claude/skills/swe-self-improve/SKILL.md AGENTS.md CLAUDE.md global-templates improvement/templates qa/verify_skill_system.py`
 
 ## Primary metric
-- Name: ledger contract is explicitly enforced end to end
+- Name: practical support scripts are available for the core workflow
 - Direction: higher_is_better
-- Baseline: the repository parses the live ledger and checks a few core fields, but it does not yet ship a dedicated ledger validator or mechanically validate the documented ledger-entry template.
-- Target: the repository ships a validator, verifies the live ledger plus template with it, and documents ledger validation as part of the workflow.
+- Baseline: the repository already ships analysis and validation helpers, but it still lacks direct Python helpers for bootstrapping the task contract and appending validated ledger iterations.
+- Target: the repository ships both helpers, documents them, and mechanically verifies that they work.
 
 ## Secondary metrics
 - QA verifier remains green
 - Existing unit tests remain green
-- The validator works on both JSONL and single-object example input
+- Helper scripts reuse the ledger contract instead of drifting from it
 - Skill wording stays aligned between Codex and Claude
 
 ## Evaluation commands
@@ -49,32 +51,34 @@
 # fast-loop commands
 python3 -m unittest discover -s qa -p 'test_*.py'
 python3 qa/verify_skill_system.py
-python3 tools/validate_ledger.py --ledger improvement/ledger.jsonl --format summary
+python3 tools/bootstrap_task.py --task-id demo-task --task-name "Demo task" --task-type feature --desired-outcome "Demo outcome" --plan-step "Draft the contract" --fast-eval "python3 qa/verify_skill_system.py" --full-gate "python3 qa/verify_skill_system.py" --primary-metric-name quality --primary-metric-direction higher_is_better --primary-metric-baseline "not started" --primary-metric-target "scaffolded" --output /tmp/swe-self-improve-demo-current-task.md --overwrite
+python3 tools/log_iteration.py --ledger /tmp/swe-self-improve-demo-ledger.jsonl --task-id demo-task --iteration 0 --eval-tier fast+full --hypothesis "Baseline" --hard-gate qa_verify=pass --primary-metric-name quality --primary-metric-baseline 0 --primary-metric-value 0 --primary-metric-direction higher_is_better --secondary-metric qa_checks=80 --evidence qa_verify=measured --kept true --summary "Baseline entry."
 
 # full-gate commands
 python3 -m unittest discover -s qa -p 'test_*.py'
 python3 qa/verify_skill_system.py
-python3 tools/validate_ledger.py --ledger improvement/ledger.jsonl --format json
-python3 tools/validate_ledger.py --ledger improvement/templates/ledger-entry.json --single-json --format json
-rg -n "validate_ledger|ledger contract|ledger-entry.json|Evidence labels" README.md .agents/skills/swe-self-improve/SKILL.md .claude/skills/swe-self-improve/SKILL.md AGENTS.md CLAUDE.md global-templates improvement/templates qa/verify_skill_system.py
+python3 tools/bootstrap_task.py --task-id demo-task --task-name "Demo task" --task-type feature --desired-outcome "Demo outcome" --plan-step "Draft the contract" --fast-eval "python3 qa/verify_skill_system.py" --full-gate "python3 qa/verify_skill_system.py" --primary-metric-name quality --primary-metric-direction higher_is_better --primary-metric-baseline "not started" --primary-metric-target "scaffolded" --output /tmp/swe-self-improve-demo-current-task.md --overwrite
+python3 tools/log_iteration.py --ledger /tmp/swe-self-improve-demo-ledger.jsonl --task-id demo-task --iteration 0 --eval-tier fast+full --hypothesis "Baseline" --hard-gate qa_verify=pass --primary-metric-name quality --primary-metric-baseline 0 --primary-metric-value 0 --primary-metric-direction higher_is_better --secondary-metric qa_checks=80 --evidence qa_verify=measured --kept true --summary "Baseline entry."
+python3 tools/validate_ledger.py --ledger /tmp/swe-self-improve-demo-ledger.jsonl --format json
+rg -n "bootstrap_task.py|log_iteration.py|support scripts|helper" README.md .agents/skills/swe-self-improve/SKILL.md .claude/skills/swe-self-improve/SKILL.md AGENTS.md CLAUDE.md global-templates improvement/templates qa/verify_skill_system.py
 ```
 
 ## Measurement notes
 - deterministic or noisy: deterministic
-- repeated runs needed: one baseline run and one kept implementation run should be enough if the validator, tests, and docs land coherently
-- fixed seed / fixed input / fixed budget: fixed repository contents and the current live ledger plus shipped example template
-- proxy limitations: wording checks are still structural proxies, so they must stay paired with real validator execution
+- repeated runs needed: one baseline and one kept implementation run should be enough if the helpers, tests, and docs stay aligned
+- fixed seed / fixed input / fixed budget: fixed repository contents and fixed demo CLI arguments for the helper smoke checks
+- proxy limitations: wording scans are structural proxies, so they must stay paired with real helper execution
 
 ## Iteration budget
 - Max iterations: 2
-- Max task time: one focused implementation pass and one full verification pass
+- Max task time: one focused implementation pass and one final verification pass
 
 ## Rollback / checkpoint strategy
-- Revert any validator rules that reject the repository's valid existing ledger history without a strong contract reason.
-- Revert documentation churn that does not map to an actual executable validation step.
+- Revert helpers that duplicate existing contract logic instead of reusing the validator.
+- Revert docs that advertise support scripts the QA suite does not actually exercise.
 
 ## Stop conditions
-- The repository ships a working ledger validator
-- QA uses that validator on the live ledger and the example template
-- Docs and skill files reflect the stronger ledger-validation workflow
-- Tests and QA both pass
+- The repository ships Python helpers for task bootstrapping and validated iteration logging
+- Tests and QA both verify those helpers
+- Docs and skill files reflect the new helper support
+- Final verification passes cleanly
