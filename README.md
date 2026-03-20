@@ -133,17 +133,17 @@ Instead, it changes how the current coding agent operates:
 
 ```mermaid
 flowchart TD
-    U["User invokes `$swe-self-improve ...` in Codex"] --> D{"Skill explicitly invoked?"}
-    D -- "Yes" --> S["Load `.agents/skills/swe-self-improve/SKILL.md`"]
-    D -- "No" --> F["Fallback to repo workflow in `AGENTS.md`"]
+    U["User invokes swe-self-improve in Codex"] --> D{"Skill explicitly invoked?"}
+    D -- "Yes" --> S["Load the swe-self-improve skill definition"]
+    D -- "No" --> F["Use the AGENTS.md fallback workflow"]
 
-    C["`.agents/skills/swe-self-improve/agents/openai.yaml`<br/>manual-only: no implicit auto-load"] --> D
-    E["`references/eval-catalog.md`<br/>task-type eval guidance"] --> P
+    C["openai.yaml keeps invocation manual only"] --> D
+    E["eval-catalog.md provides task-type evaluation guidance"] --> P
 
     S --> P["Current agent switches into bounded improvement mode"]
     F --> P
 
-    P --> T["Create or update `improvement/current-task.md`"]
+    P --> T["Create or update improvement/current-task.md"]
     T --> B["Run baseline eval"]
     B --> H["Choose one reversible hypothesis"]
     H --> Q["Implement the smallest credible diff"]
@@ -157,7 +157,7 @@ flowchart TD
     K -- "Yes" --> L["Keep the change"]
     K -- "No" --> X
 
-    L --> J["Append result to `improvement/ledger.jsonl`"]
+    L --> J["Append result to improvement/ledger.jsonl"]
     X --> J
     J --> N{"Budget left and more ideas worth trying?"}
     N -- "Yes" --> H

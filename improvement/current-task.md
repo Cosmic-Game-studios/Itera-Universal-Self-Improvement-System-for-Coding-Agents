@@ -1,61 +1,62 @@
 # Current task
 
-- Task ID: 2026-03-20-github-repo-import
-- Task name: Publish the complete project into the target GitHub repository
-- Task type: infra / deployment
-- Desired outcome: Initialize Git for this project, preserve the existing remote `LICENSE`, commit the full project, and push it to `main` on the target GitHub repository.
-- Non-goals: Change core project behavior, rewrite repository content unrelated to publishing, or force-push over unknown remote history.
+- Task ID: 2026-03-20-github-mermaid-fix
+- Task name: Fix the GitHub Mermaid rendering error in the agent-flow diagram
+- Task type: documentation
+- Desired outcome: Update the README Mermaid diagram so GitHub renders it successfully while preserving the explanation of how the skill affects the current agent.
+- Non-goals: Change the meaning of the workflow, redesign unrelated README sections, or alter runtime skill behavior.
 
 ## Constraints
-- The remote already contains a `main` branch and one `LICENSE` commit, so integrate with it instead of overwriting it.
-- Avoid committing transient local artifacts such as `.DS_Store`.
-- Keep the repository content aligned with the verified local project state.
+- Keep the explanation accurate to the current repository behavior.
+- Use Mermaid syntax that GitHub accepts reliably.
+- Keep the diff small and documentation-focused.
 
 ## Fast-loop evals
-- `git status --short`
-- `git log --oneline --decorate -n 3`
+- `rg -n '<br/>|`' README.md`
 - `python3 qa/verify_skill_system.py`
+- `git diff -- README.md`
 
 ## Full gates
-- Verify the pushed remote branch contains the project files and expected head commit
+- Verify the README still explains the same agent flow after the syntax simplification.
 - `python3 qa/verify_skill_system.py`
+- Confirm the GitHub repository page no longer shows the Mermaid lexical error.
 
 ## Primary metric
-- Name: target GitHub repository contains the complete project on `main`
+- Name: GitHub README diagram renders without Mermaid syntax errors
 - Direction: higher_is_better
-- Baseline: Remote repository only contains `LICENSE`; this local directory is not yet a Git repository.
-- Target: Remote `main` points to a commit that contains the full project tree plus the existing `LICENSE`.
+- Baseline: GitHub reports a Mermaid lexical error on the current diagram; the offending nodes contain inline-code backticks and HTML `<br/>` inside labels.
+- Target: The diagram renders on GitHub and still communicates the same flow.
 
 ## Secondary metrics
 - QA verifier remains passing
-- No unwanted local junk files are committed
-- Remote history is advanced safely without force push
+- README meaning stays accurate
+- Git diff remains limited to the Mermaid fix and task logging
 
 ## Evaluation commands
 ```bash
 # fast-loop commands
-git status --short
-git log --oneline --decorate -n 3
+rg -n '<br/>|`' README.md
 python3 qa/verify_skill_system.py
+git diff -- README.md
 
 # full-gate commands
 python3 qa/verify_skill_system.py
-git ls-remote https://github.com/Cosmic-Game-studios/Itera-Universal-Self-Improvement-System-for-Coding-Agents.git
+git push
 ```
 
 ## Measurement notes
-- deterministic or noisy: deterministic
-- fixed seed / fixed sample / fixed budget: fixed local tree, fixed remote URL, static QA script
-- proxy limitations: push success depends on available GitHub credentials in this environment
+- deterministic or noisy: deterministic except for GitHub page rendering latency
+- fixed seed / fixed sample / fixed budget: fixed README section and fixed GitHub repository page
+- proxy limitations: local grep can confirm removal of risky syntax, but final success depends on GitHub's Mermaid renderer, so a browser check is required
 
 ## Iteration budget
 - Max iterations: 2
-- Time budget: one focused repo-import pass with one verification pass
+- Time budget: one focused README syntax fix and one GitHub verification pass
 
 ## Rollback plan
-- If publish setup fails before push, keep the local filesystem intact and stop without forcing remote changes.
+- Revert the README Mermaid hunk if the simplified labels reduce clarity or GitHub still fails to render.
 
 ## Stop conditions
-- Local project is committed on `main`, connected to the target remote, and push succeeds
-- QA verifier passes on the published state
-- If credentials block push, stop after preparing the repository and report the exact blocker
+- The Mermaid block is simplified to GitHub-compatible syntax
+- QA verifier passes
+- GitHub renders the README diagram without the reported lexical error
