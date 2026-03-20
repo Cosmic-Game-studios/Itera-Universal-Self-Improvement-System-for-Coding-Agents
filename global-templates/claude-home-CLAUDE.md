@@ -8,11 +8,12 @@ Use this as `~/.claude/CLAUDE.md` and keep project-specific details in each repo
 For meaningful software-engineering tasks, use an evaluation-first improvement loop:
 
 1. define the task, constraints, and non-goals
-2. identify fast-loop evals and full gates
-3. establish a baseline when possible
-4. test one hypothesis at a time
-5. keep only changes that clearly win overall
-6. revert failed or low-value iterations
+2. create a short execution plan before broad edits
+3. identify fast-loop evals and full gates
+4. establish a baseline when possible
+5. test one hypothesis at a time
+6. keep only changes that clearly win overall
+7. revert failed or low-value iterations
 
 ## Universal preferences
 

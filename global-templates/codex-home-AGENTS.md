@@ -8,11 +8,12 @@ Use this as `~/.codex/AGENTS.md` and keep repository-specific details in each re
 For non-trivial software-engineering tasks, default to this evaluation-first loop:
 
 1. define the task, constraints, and non-goals
-2. identify fast-loop evals and full gates
-3. run a baseline when possible
-4. work one hypothesis at a time
-5. keep only changes that pass hard gates and improve the target outcome
-6. revert failed iterations cleanly
+2. create a short execution plan before broad edits
+3. identify fast-loop evals and full gates
+4. run a baseline when possible
+5. work one hypothesis at a time
+6. keep only changes that pass hard gates and improve the target outcome
+7. revert failed iterations cleanly
 
 ## Universal guardrails
 

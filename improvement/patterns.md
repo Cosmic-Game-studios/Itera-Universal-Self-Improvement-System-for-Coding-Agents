@@ -24,3 +24,8 @@ Recommended format:
 - Context: the repository treats self-improvement as a logged workflow rather than a one-shot edit.
 - Signal: kept runs consistently updated `improvement/current-task.md` and `improvement/ledger.jsonl` alongside the winning change, which made later review and pattern extraction easier.
 - Caveat: avoid dumping transient exploration noise into durable artifacts; record the final kept state and only the iteration history the user asked to preserve.
+
+## Pattern: make the execution plan explicit before the first edit
+- Context: evaluation-first loops are easier to review and keep aligned when the intended order of attack is visible up front.
+- Signal: the workflow became more robust once the skill, fallback docs, template, and QA all required an explicit execution plan instead of leaving planning implicit.
+- Caveat: keep the plan short and concrete; the point is to guide the iteration loop, not to create heavyweight ceremony.

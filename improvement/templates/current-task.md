@@ -6,6 +6,9 @@
 - Desired outcome:
 - Non-goals:
 
+## Execution plan
+- <3-7 short ordered steps>
+
 ## Constraints
 - Must not break:
 - Must not change:

@@ -13,12 +13,16 @@ Before broad edits, establish:
 
 1. task type
 2. constraints and non-goals
-3. fast-loop evals
-4. full gates
-5. primary metric
-6. secondary metrics
-7. iteration budget
-8. rollback strategy
+3. a short execution plan
+4. fast-loop evals
+5. full gates
+6. primary metric
+7. secondary metrics
+8. iteration budget
+9. rollback strategy
+
+Planning is mandatory for non-trivial work.
+Before major edits, the current task should have an explicit execution plan, even if it is short.
 
 ## Baseline first
 

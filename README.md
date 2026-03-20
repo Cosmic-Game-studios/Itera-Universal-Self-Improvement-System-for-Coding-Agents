@@ -30,11 +30,12 @@ The transferable part is the loop:
 
 1. define a bounded search space
 2. establish a baseline
-3. make one hypothesis-driven change
-4. run a deterministic evaluation contract
-5. keep or discard the change
-6. log the result
-7. repeat until the task budget is exhausted
+3. make a short execution plan
+4. make one hypothesis-driven change
+5. run a deterministic evaluation contract
+6. keep or discard the change
+7. log the result
+8. repeat until the task budget is exhausted
 
 For general SWE, replace the single training metric with a **fitness vector**:
 
@@ -256,7 +257,7 @@ The agent is guided to plan the task, measure a baseline, try one hypothesis at 
 ## Recommended working model
 
 Use the loop for any non-trivial SWE task.
-The workflow should create or update `improvement/current-task.md` before major edits.
+The workflow should create or update `improvement/current-task.md` with an execution plan before major edits.
 
 Recommended default iteration budget:
 

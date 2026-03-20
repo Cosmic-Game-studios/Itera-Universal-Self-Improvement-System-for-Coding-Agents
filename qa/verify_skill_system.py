@@ -50,6 +50,8 @@ claude_skill = read(".claude/skills/swe-self-improve/SKILL.md")
 readme = read("README.md")
 agents = read("AGENTS.md")
 claude = read("CLAUDE.md")
+global_codex = read("global-templates/codex-home-AGENTS.md")
+global_claude = read("global-templates/claude-home-CLAUDE.md")
 eval_catalog = read(".agents/skills/swe-self-improve/references/eval-catalog.md")
 current_task = read("improvement/templates/current-task.md")
 eval_contract = read("improvement/templates/eval-contract.md")
@@ -101,6 +103,16 @@ for name, text, phrase in [
     ("eval_contract_has_full_gates", eval_contract, "full gates"),
 ]:
     add(name, phrase in text.lower(), f"contains {phrase}")
+for name, text in [
+    ("codex_skill_requires_execution_plan", codex_skill),
+    ("claude_skill_requires_execution_plan", claude_skill),
+    ("agents_require_execution_plan", agents),
+    ("claude_require_execution_plan", claude),
+    ("global_codex_requires_execution_plan", global_codex),
+    ("global_claude_requires_execution_plan", global_claude),
+    ("readme_mentions_execution_plan", readme),
+]:
+    add(name, "execution plan" in text.lower(), "mentions execution plan explicitly")
 
 # Universal coverage heuristic
 combined = "\n".join([codex_skill, eval_catalog, readme]).lower()
@@ -143,6 +155,7 @@ add(
 
 # Live task contract
 required_task_sections = [
+    "## Execution plan",
     "## Constraints",
     "## Fast-loop evals",
     "## Full gates",
@@ -163,6 +176,16 @@ add(
     "current_task_has_core_sections",
     all(section in read("improvement/current-task.md") for section in required_task_sections),
     "improvement/current-task.md includes the core self-improvement contract sections",
+)
+add(
+    "template_has_execution_plan",
+    "## Execution plan" in current_task,
+    "improvement/templates/current-task.md includes an execution plan section",
+)
+add(
+    "live_task_has_execution_plan",
+    "## Execution plan" in read("improvement/current-task.md"),
+    "improvement/current-task.md includes an execution plan section",
 )
 
 # Ledger integrity

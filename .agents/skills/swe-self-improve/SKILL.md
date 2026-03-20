@@ -15,10 +15,11 @@ Turn a software-engineering task into a bounded improvement program:
 
 1. define the target
 2. define how success is measured
-3. establish a baseline
-4. try one hypothesis at a time
-5. keep or discard each iteration
-6. stop when the budget is exhausted or the curve flattens
+3. make a short execution plan
+4. establish a baseline
+5. try one hypothesis at a time
+6. keep or discard each iteration
+7. stop when the budget is exhausted or the curve flattens
 
 ## Inputs
 
@@ -27,6 +28,7 @@ From the user prompt and repository, determine:
 - task type
 - desired outcome
 - forbidden regressions
+- execution plan shape
 - available evaluation commands or scripts
 - acceptable iteration budget
 - rollback method
@@ -41,7 +43,7 @@ If `improvement/current-task.md` already exists, update it instead of creating a
 
 If the `improvement/` directory does not exist, create it and initialize the above files.
 
-## Step 1: Create the task contract
+## Step 1: Create the task contract and execution plan
 
 Write or update `improvement/current-task.md` with:
 
@@ -49,16 +51,21 @@ Write or update `improvement/current-task.md` with:
 2. task type
 3. desired outcome
 4. non-goals
-5. fast-loop evals
-6. full gates
-7. primary metric
-8. secondary metrics
-9. evaluation commands
-10. iteration budget
-11. rollback/checkpoint plan
-12. stop conditions
+5. execution plan with 3-7 concrete steps
+6. fast-loop evals
+7. full gates
+8. primary metric
+9. secondary metrics
+10. evaluation commands
+11. iteration budget
+12. rollback/checkpoint plan
+13. stop conditions
 
 Use the template in `improvement/templates/current-task.md` if present.
+
+Planning is mandatory for non-trivial use of this skill.
+Before baseline or meaningful edits, create a short execution plan.
+It can stay concise, but it must exist and should be reflected in `improvement/current-task.md` when that artifact is in use.
 
 ## Step 2: Establish baseline
 
@@ -254,10 +261,10 @@ Good durable lesson format:
 
 When reporting progress:
 
+- say what step of the execution plan you are on
 - say what hypothesis you tried
 - say what you measured
 - say whether you kept or reverted it
 - make uncertainty explicit
 
 Do not describe a change as an improvement unless the evaluation contract supports it.
-

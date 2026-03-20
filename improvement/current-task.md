@@ -1,66 +1,72 @@
 # Current task
 
-- Task ID: 2026-03-20-self-improve-20-runs
-- Task name: Use the skill to improve this repository itself until the ledger reaches 20 runs
+- Task ID: 2026-03-20-plan-required-in-skill
+- Task name: Make planning an explicit required part of the self-improvement workflow
 - Task type: refactor
-- Desired outcome: Strengthen the repository's own self-improvement scaffolding with a bounded multi-run program that improves QA coverage, durable pattern capture, and self-application documentation while bringing the ledger to 20 total runs.
-- Non-goals: Inflate the ledger with fake no-op wins, introduce external dependencies, or make claims that were not supported by repository-local evaluation.
+- Desired outcome: Extend the Codex and Claude `swe-self-improve` skill so planning is an explicit mandatory step, and propagate that requirement through the fallback docs, task template, README guidance, and QA checks.
+- Non-goals: Change the underlying keep-or-revert philosophy, introduce external dependencies, or weaken the existing evaluation-first discipline.
+
+## Execution plan
+1. Update the live task contract and baseline ledger for this planning-focused skill change.
+2. Add explicit plan-first language to both skill files and both fallback workflow files.
+3. Extend the task template and README so the planning requirement is visible to future users.
+4. Strengthen QA so the repository fails if the planning requirement disappears from the workflow stack.
+5. Run full verification, log the kept iteration, and publish the final state.
 
 ## Constraints
 - Use only the Python standard library.
-- Keep each iteration small and reversible.
-- Prefer improvements that measurably strengthen self-improvement support in this repo.
+- Keep the workflow language aligned across Codex, Claude, and fallback docs.
+- Prefer a small wording and verification diff over a broad rewrite.
 
 ## Fast-loop evals
 - `python3 -m unittest discover -s qa -p 'test_*.py'`
 - `python3 qa/verify_skill_system.py`
-- `python3 tools/pattern_recognition.py --ledger improvement/ledger.jsonl --format markdown`
+- `rg -n "execution plan|plan before|planning is mandatory|plan-first" .agents/skills/swe-self-improve .claude/skills/swe-self-improve AGENTS.md CLAUDE.md improvement/templates/current-task.md README.md qa/verify_skill_system.py`
 
 ## Full gates
-- Verify the repository still passes QA, the pattern tool still emits stable output, and the self-improvement artifacts become more useful for future runs.
+- Verify the skill stack consistently requires planning and the repository still passes its structural QA.
 - `python3 -m unittest discover -s qa -p 'test_*.py'`
 - `python3 qa/verify_skill_system.py`
-- `python3 tools/pattern_recognition.py --ledger improvement/ledger.jsonl --format json`
+- `rg -n "execution plan|plan before|planning is mandatory|plan-first" .agents/skills/swe-self-improve .claude/skills/swe-self-improve AGENTS.md CLAUDE.md global-templates README.md improvement/templates/current-task.md qa/verify_skill_system.py`
 
 ## Primary metric
-- Name: self-improvement support checks passing in `qa/verify_skill_system.py`
+- Name: planning requirement is explicitly enforced across the workflow stack
 - Direction: higher_is_better
-- Baseline: 37 passed checks before this new self-improvement program begins.
-- Target: Increase the number of meaningful passed support checks while keeping all hard gates green.
+- Baseline: the repository passes QA, but planning is only implied in scattered wording and is not explicitly enforced across the skill, fallback docs, template, and verifier.
+- Target: the workflow stack explicitly requires a plan and QA fails if that requirement disappears.
 
 ## Secondary metrics
-- Total ledger entries reaches 20
-- `improvement/patterns.md` contains durable reviewed lessons
-- Unit test count stays green or improves
-- Pattern-recognition output remains deterministic for the same ledger input
+- QA verifier remains green
+- Existing unit tests remain green
+- Skill wording stays concise and aligned between Codex and Claude
 
 ## Evaluation commands
 ```bash
 # fast-loop commands
 python3 -m unittest discover -s qa -p 'test_*.py'
 python3 qa/verify_skill_system.py
-python3 tools/pattern_recognition.py --ledger improvement/ledger.jsonl --format markdown
+rg -n "execution plan|plan before|planning is mandatory|plan-first" .agents/skills/swe-self-improve .claude/skills/swe-self-improve AGENTS.md CLAUDE.md improvement/templates/current-task.md README.md qa/verify_skill_system.py
 
 # full-gate commands
 python3 -m unittest discover -s qa -p 'test_*.py'
 python3 qa/verify_skill_system.py
-python3 tools/pattern_recognition.py --ledger improvement/ledger.jsonl --format json
+rg -n "execution plan|plan before|planning is mandatory|plan-first" .agents/skills/swe-self-improve .claude/skills/swe-self-improve AGENTS.md CLAUDE.md global-templates README.md improvement/templates/current-task.md qa/verify_skill_system.py
 ```
 
 ## Measurement notes
 - deterministic or noisy: deterministic
-- repeated runs needed: one run per hypothesis, with final gates on the kept state
-- fixed seed / fixed input / fixed budget: fixed repository contents and fixed ledger history per iteration
-- proxy limitations: QA pass-count is only meaningful when new checks correspond to real repository guarantees rather than metric gaming
+- repeated runs needed: one baseline run and one kept implementation run should be enough if the wording stays aligned
+- fixed seed / fixed input / fixed budget: fixed repository contents and repository-local QA/check searches
+- proxy limitations: wording checks are structural proxies, so the final diff must still read coherently as a workflow change rather than keyword stuffing
 
 ## Iteration budget
-- Max iterations: 7
-- Max task time: one focused multi-run self-improvement session that brings the total ledger history to 20 entries
+- Max iterations: 2
+- Max task time: one focused implementation pass and one verification pass
 
 ## Rollback / checkpoint strategy
-- Keep only iterations that increase real repository support while preserving green gates; discard speculative or metric-gamed changes.
+- Revert any wording or QA additions that force awkward phrasing, drift Codex and Claude apart, or create brittle keyword-only checks.
 
 ## Stop conditions
-- Ledger has 20 total entries
-- `qa/verify_skill_system.py` still passes
-- The kept state leaves the repository materially better at running future `swe-self-improve` loops on itself
+- Planning is explicit in the skill, fallback docs, template, and README
+- `qa/verify_skill_system.py` enforces the planning requirement
+- Tests and QA both pass
