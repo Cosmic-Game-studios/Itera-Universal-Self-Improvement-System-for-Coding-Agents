@@ -35,6 +35,7 @@ Document it in `improvement/current-task.md` and log it in `improvement/ledger.j
 - smallest reversible diff
 - run fast-loop evals each iteration
 - run full-gate evals before final keep when needed
+- review loop state and remaining budget before starting the next hypothesis
 - prefer existing tooling
 - avoid new dependencies unless clearly justified
 - separate measured results from inference
@@ -68,6 +69,7 @@ Examples: failing test, benchmark, build check, accessibility check, visual snap
 
 Use `improvement/ledger.jsonl` for structured iteration logs.
 If the repository ships helper scripts such as `tools/bootstrap_task.py` or `tools/log_iteration.py`, prefer them for scaffolding and validated ledger appends.
+If the repository ships `tools/loop_state.py`, use it as an advisory loop-review step before continuing or stopping.
 If the repository ships a ledger validator such as `tools/validate_ledger.py`, run it after editing the ledger and before final keep.
 Use `improvement/patterns.md` only for durable lessons that are likely to matter again.
 

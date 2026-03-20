@@ -443,6 +443,21 @@ python3 tools/log_iteration.py \
   --summary "Baseline entry."
 ```
 
+## Loop state helper
+
+The `tools/loop_state.py` script summarizes the live state of the current self-improvement run from `improvement/current-task.md` and `improvement/ledger.jsonl`.
+Use it after logging an iteration to see the next suggested iteration number, remaining budget, recent failure streaks, and a conservative continue-or-review recommendation.
+
+Run it with:
+
+```bash
+python3 tools/loop_state.py --task improvement/current-task.md --ledger improvement/ledger.jsonl --format summary
+python3 tools/loop_state.py --task improvement/current-task.md --ledger improvement/ledger.jsonl --format json
+```
+
+Treat the recommendation as advisory.
+It is there to make the loop more deliberate, not to replace judgment.
+
 ## 20-run self-application
 
 If you want to use the skill on this repository itself, treat it like a bounded program instead of an open-ended rewrite.

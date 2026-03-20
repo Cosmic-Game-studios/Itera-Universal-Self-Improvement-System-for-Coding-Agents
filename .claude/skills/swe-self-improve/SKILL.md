@@ -126,6 +126,9 @@ For each iteration:
 5. log results in `improvement/ledger.jsonl`
 6. compare to the current best state
 7. keep or revert
+8. review loop state, remaining budget, and stop/continue signals before choosing the next hypothesis
+
+If the repository ships `tools/loop_state.py`, use it after logging and before deciding whether to continue, replan, or stop.
 
 ### Fast-loop evals vs full gates
 
@@ -176,6 +179,7 @@ Stop when any of these are true:
 
 Do not continue indefinitely by default.
 Open-ended looping is appropriate only when the user explicitly asks for long-running autonomous exploration and the task has a safe, repeatable eval.
+If the repository ships `tools/loop_state.py`, prefer it as an advisory review step before stopping or spending another iteration.
 
 ## Logging format
 

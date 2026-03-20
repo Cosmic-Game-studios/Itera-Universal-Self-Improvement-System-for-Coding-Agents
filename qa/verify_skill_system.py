@@ -40,6 +40,7 @@ for rel in [
     "improvement/templates/eval-contract.md",
     "improvement/templates/ledger-entry.json",
     "tools/bootstrap_task.py",
+    "tools/loop_state.py",
     "tools/log_iteration.py",
     "tools/pattern_recognition.py",
     "tools/repo_area_plan.py",
@@ -179,6 +180,11 @@ add(
     "README documents the iteration logging helper",
 )
 add(
+    "readme_mentions_loop_state_helper",
+    "## loop state helper" in readme.lower() and "tools/loop_state.py" in readme,
+    "README documents the loop state helper",
+)
+add(
     "readme_mentions_20_run_self_application",
     "## 20-run self-application" in readme.lower() and "small reversible hypotheses" in readme.lower(),
     "README documents how to run a bounded 20-run self-application program",
@@ -195,6 +201,22 @@ for name, text in [
         name,
         "validate_ledger" in text.lower() or "ledger validator" in text.lower(),
         "mentions ledger validation explicitly",
+    )
+for name, text in [
+    ("codex_skill_mentions_loop_review", codex_skill),
+    ("claude_skill_mentions_loop_review", claude_skill),
+    ("agents_mention_loop_review", agents),
+    ("claude_mention_loop_review", claude),
+    ("global_codex_mentions_loop_review", global_codex),
+    ("global_claude_mentions_loop_review", global_claude),
+]:
+    add(
+        name,
+        "loop_state.py" in text.lower()
+        or "loop state" in text.lower()
+        or "loop-state" in text.lower()
+        or "loop-review" in text.lower(),
+        "mentions loop-state review explicitly",
     )
 
 # Live task contract
@@ -537,6 +559,48 @@ add(
     "log_iteration_helper_validates",
     log_iteration_helper_executes and log_iteration_helper_validates,
     "iteration logging helper appends a validated entry and reports a valid ledger",
+)
+
+loop_state_helper_executes = False
+loop_state_helper_reports_task = False
+try:
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "tools" / "loop_state.py"),
+            "--task",
+            str(ROOT / "improvement" / "current-task.md"),
+            "--ledger",
+            str(ROOT / "improvement" / "ledger.jsonl"),
+            "--format",
+            "json",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    payload = json.loads(result.stdout)
+    if isinstance(payload, dict):
+        loop_state_helper_executes = True
+        loop_state_helper_reports_task = (
+            payload.get("task_id") == "2026-03-20-loop-review-hardening"
+            and isinstance(payload.get("recommendation"), str)
+            and isinstance(payload.get("next_iteration"), int)
+            and payload.get("next_iteration") >= 1
+            and payload.get("baseline_present") is True
+        )
+except (OSError, subprocess.CalledProcessError, json.JSONDecodeError):
+    loop_state_helper_executes = False
+
+add(
+    "loop_state_helper_executes",
+    loop_state_helper_executes,
+    "loop-state helper executes and returns JSON on the live task and ledger",
+)
+add(
+    "loop_state_helper_reports_task",
+    loop_state_helper_executes and loop_state_helper_reports_task,
+    "loop-state helper reports the live task id plus an advisory recommendation and next iteration",
 )
 
 # Durable patterns

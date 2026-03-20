@@ -22,6 +22,7 @@
 
 ## Fast-loop evals
 - <cheap checks run each iteration>
+- <loop-state helper command if the repo ships one>
 
 ## Full gates
 - <broader checks required before final keep>

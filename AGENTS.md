@@ -34,6 +34,7 @@ Capture the current state in `improvement/current-task.md` and append the baseli
 - Prefer the smallest reversible diff.
 - Run fast-loop evals on every iteration.
 - Run full-gate evals before final keep when they are more expensive.
+- Review loop state and remaining budget before starting the next hypothesis.
 - Prefer existing tools, commands, and dependencies.
 - Do not add new production dependencies unless clearly justified.
 - Distinguish measured facts from inferred judgments.
@@ -69,6 +70,7 @@ Use git to inspect diffs and revert failed iterations cleanly.
 Use `improvement/ledger.jsonl` for iteration logs.
 Keep logs machine-readable.
 If the repository ships helper scripts such as `tools/bootstrap_task.py` or `tools/log_iteration.py`, prefer them for scaffolding and validated ledger appends.
+If the repository ships `tools/loop_state.py`, use it as an advisory loop-review step before continuing or stopping.
 If the repository ships a ledger validator such as `tools/validate_ledger.py`, run it after editing the ledger and before final keep.
 Do not commit transient logs unless the user asks for them in version control.
 

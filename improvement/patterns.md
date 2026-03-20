@@ -44,3 +44,8 @@ Recommended format:
 - Context: task scaffolding and ledger appends are repeated in almost every self-improvement run.
 - Signal: small support scripts reduce copy-paste mistakes while keeping the contract explicit and human-reviewable.
 - Caveat: helpers should stay thin wrappers around the documented workflow, not opaque automation that hides decisions.
+
+## Pattern: review loop state before spending another iteration
+- Context: bounded improvement works better when the team checks budget, recent failures, and the current best state instead of reflexively starting another hypothesis.
+- Signal: a small advisory loop-state review step makes stop conditions more real and reduces mindless churn.
+- Caveat: the review should inform judgment, not pretend that a heuristic can fully decide whether the task is done.
