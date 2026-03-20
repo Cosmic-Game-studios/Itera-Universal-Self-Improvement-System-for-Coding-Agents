@@ -392,6 +392,27 @@ Recommended approach:
 
 This repository's own ledger can be used as a concrete example of that style of self-application.
 
+## Program mode for large sweeps
+
+For a much larger repository-wide push, such as a thorough 600-run sweep across all major areas, use `program mode` instead of one flat queue.
+
+The basic pattern is:
+
+1. scan the repository into areas
+2. assign a run budget to each area
+3. sweep one area at a time
+4. checkpoint between areas
+5. keep the current best state as you move through the program
+
+The included planner tool can generate a deterministic starting split:
+
+```bash
+python3 tools/repo_area_plan.py --root . --budget 600 --format markdown
+python3 tools/repo_area_plan.py --root . --budget 600 --format json
+```
+
+That gives you an area coverage plan and a suggested run-budget allocation before you start the actual loop.
+
 ## Minimal operating discipline
 
 - baseline first

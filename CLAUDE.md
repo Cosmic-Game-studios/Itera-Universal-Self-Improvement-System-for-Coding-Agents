@@ -39,6 +39,15 @@ Document it in `improvement/current-task.md` and log it in `improvement/ledger.j
 - avoid new dependencies unless clearly justified
 - separate measured results from inference
 
+## Large program mode
+
+If a task spans many files, many areas, or a very large budget such as a 600-run sweep:
+
+- map the repository into areas first
+- assign a run budget to each area
+- sweep one area at a time
+- checkpoint between areas instead of mixing the whole repository into one diff
+
 ## Keep / discard rule
 
 Keep a change only when:

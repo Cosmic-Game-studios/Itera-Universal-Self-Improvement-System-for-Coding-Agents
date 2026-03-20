@@ -1,72 +1,89 @@
 # Current task
 
-- Task ID: 2026-03-20-plan-required-in-skill
-- Task name: Make planning an explicit required part of the self-improvement workflow
+- Task ID: 2026-03-20-program-mode-600-run-sweeps
+- Task name: Extend the skill for large multi-area 600-run programs
 - Task type: refactor
-- Desired outcome: Extend the Codex and Claude `swe-self-improve` skill so planning is an explicit mandatory step, and propagate that requirement through the fallback docs, task template, README guidance, and QA checks.
-- Non-goals: Change the underlying keep-or-revert philosophy, introduce external dependencies, or weaken the existing evaluation-first discipline.
+- Desired outcome: Extend the repository so `swe-self-improve` can explicitly support large, thorough, multi-area programs such as a 600-run repository sweep, including documentation, templates, and a small planner tool for area coverage and budget allocation.
+- Non-goals: Actually fabricate 600 fake iterations in the ledger, introduce external dependencies, or replace the existing bounded keep-or-revert philosophy with uncontrolled autonomous churn.
 
 ## Execution plan
-1. Update the live task contract and baseline ledger for this planning-focused skill change.
-2. Add explicit plan-first language to both skill files and both fallback workflow files.
-3. Extend the task template and README so the planning requirement is visible to future users.
-4. Strengthen QA so the repository fails if the planning requirement disappears from the workflow stack.
-5. Run full verification, log the kept iteration, and publish the final state.
+1. Update the task contract and log a baseline for the program-mode expansion.
+2. Add a repo-area planning tool that can scan the repository and propose area coverage plus run-budget splits for large sweeps.
+3. Extend the skills, fallback docs, templates, and README with an explicit program-mode / 600-run workflow.
+4. Strengthen QA so the repository verifies the new program-mode support instead of leaving it as informal prose.
+5. Run full verification, log the kept change, and publish the final state.
+
+## Optional: Area coverage plan
+- `[root]`: top-level docs and repo guidance
+- `.agents/`: Codex skill and Codex-side references
+- `.claude/`: Claude skill and Claude-side references
+- `global-templates/`: shipped user-level defaults
+- `improvement/`: contracts, ledger, patterns, and templates
+- `qa/`: verifier and tests
+- `tools/`: repo support tooling and planners
+
+## Optional: Run budget allocation
+- Use `tools/repo_area_plan.py --root . --budget 600` as the canonical area budget suggestion for repo-wide sweeps.
+- Keep this implementation task itself bounded to 2 iterations even though it is adding 600-run program support.
 
 ## Constraints
 - Use only the Python standard library.
-- Keep the workflow language aligned across Codex, Claude, and fallback docs.
-- Prefer a small wording and verification diff over a broad rewrite.
+- Keep the workflow language aligned across Codex, Claude, fallback docs, and templates.
+- Prefer support for real staged large-run programs, not hype or fake autonomous claims.
 
 ## Fast-loop evals
 - `python3 -m unittest discover -s qa -p 'test_*.py'`
 - `python3 qa/verify_skill_system.py`
-- `rg -n "execution plan|plan before|planning is mandatory|plan-first" .agents/skills/swe-self-improve .claude/skills/swe-self-improve AGENTS.md CLAUDE.md improvement/templates/current-task.md README.md qa/verify_skill_system.py`
+- `python3 tools/repo_area_plan.py --root . --budget 600 --format markdown`
 
 ## Full gates
-- Verify the skill stack consistently requires planning and the repository still passes its structural QA.
+- Verify the skill stack consistently documents large multi-area program mode, the planner tool works, and the repository still passes structural QA.
 - `python3 -m unittest discover -s qa -p 'test_*.py'`
 - `python3 qa/verify_skill_system.py`
-- `rg -n "execution plan|plan before|planning is mandatory|plan-first" .agents/skills/swe-self-improve .claude/skills/swe-self-improve AGENTS.md CLAUDE.md global-templates README.md improvement/templates/current-task.md qa/verify_skill_system.py`
+- `python3 tools/repo_area_plan.py --root . --budget 600 --format json`
+- `rg -n "program mode|600-run|area coverage|run budget" .agents/skills/swe-self-improve .claude/skills/swe-self-improve AGENTS.md CLAUDE.md global-templates README.md improvement/templates qa/verify_skill_system.py`
 
 ## Primary metric
-- Name: planning requirement is explicitly enforced across the workflow stack
+- Name: large-program support is explicitly available across the workflow stack
 - Direction: higher_is_better
-- Baseline: the repository passes QA, but planning is only implied in scattered wording and is not explicitly enforced across the skill, fallback docs, template, and verifier.
-- Target: the workflow stack explicitly requires a plan and QA fails if that requirement disappears.
+- Baseline: the repository passes QA, but it does not yet provide a dedicated repo-area planner or explicit 600-run program-mode guidance for sweeping all areas.
+- Target: the repository ships explicit program-mode guidance plus a working planner tool for large multi-area sweeps, and QA enforces that support.
 
 ## Secondary metrics
 - QA verifier remains green
 - Existing unit tests remain green
-- Skill wording stays concise and aligned between Codex and Claude
+- Skill wording stays aligned between Codex and Claude
+- Planner output is deterministic for the same repository and budget
 
 ## Evaluation commands
 ```bash
 # fast-loop commands
 python3 -m unittest discover -s qa -p 'test_*.py'
 python3 qa/verify_skill_system.py
-rg -n "execution plan|plan before|planning is mandatory|plan-first" .agents/skills/swe-self-improve .claude/skills/swe-self-improve AGENTS.md CLAUDE.md improvement/templates/current-task.md README.md qa/verify_skill_system.py
+python3 tools/repo_area_plan.py --root . --budget 600 --format markdown
 
 # full-gate commands
 python3 -m unittest discover -s qa -p 'test_*.py'
 python3 qa/verify_skill_system.py
-rg -n "execution plan|plan before|planning is mandatory|plan-first" .agents/skills/swe-self-improve .claude/skills/swe-self-improve AGENTS.md CLAUDE.md global-templates README.md improvement/templates/current-task.md qa/verify_skill_system.py
+python3 tools/repo_area_plan.py --root . --budget 600 --format json
+rg -n "program mode|600-run|area coverage|run budget" .agents/skills/swe-self-improve .claude/skills/swe-self-improve AGENTS.md CLAUDE.md global-templates README.md improvement/templates qa/verify_skill_system.py
 ```
 
 ## Measurement notes
 - deterministic or noisy: deterministic
-- repeated runs needed: one baseline run and one kept implementation run should be enough if the wording stays aligned
-- fixed seed / fixed input / fixed budget: fixed repository contents and repository-local QA/check searches
-- proxy limitations: wording checks are structural proxies, so the final diff must still read coherently as a workflow change rather than keyword stuffing
+- repeated runs needed: one baseline run and one kept implementation run should be enough if the planner and docs land coherently
+- fixed seed / fixed input / fixed budget: fixed repository contents and a fixed run budget of 600 for planner verification
+- proxy limitations: wording checks remain structural proxies, so the final tool and docs still need to read as a real operating model rather than keyword stuffing
 
 ## Iteration budget
 - Max iterations: 2
 - Max task time: one focused implementation pass and one verification pass
 
 ## Rollback / checkpoint strategy
-- Revert any wording or QA additions that force awkward phrasing, drift Codex and Claude apart, or create brittle keyword-only checks.
+- Revert any additions that only simulate a 600-run mode rhetorically, create brittle QA checks, or make the workflow look less bounded and trustworthy.
 
 ## Stop conditions
-- Planning is explicit in the skill, fallback docs, template, and README
-- `qa/verify_skill_system.py` enforces the planning requirement
+- Program mode for large multi-area sweeps is explicit in the skill stack
+- The repo ships a working planner for large-budget area coverage
+- `qa/verify_skill_system.py` enforces the new support
 - Tests and QA both pass

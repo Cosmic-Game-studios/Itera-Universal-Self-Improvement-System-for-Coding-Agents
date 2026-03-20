@@ -38,6 +38,15 @@ Capture the current state in `improvement/current-task.md` and append the baseli
 - Do not add new production dependencies unless clearly justified.
 - Distinguish measured facts from inferred judgments.
 
+## Large program mode
+
+If a task spans many files, many areas, or a very large budget such as a 600-run sweep:
+
+- map the repository into areas first
+- assign a run budget to each area
+- sweep one area at a time
+- checkpoint between areas instead of mixing the whole repository into one diff
+
 ## Keep / discard rule
 
 Keep a change only when:

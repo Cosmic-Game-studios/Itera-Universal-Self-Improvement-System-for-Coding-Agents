@@ -9,6 +9,12 @@
 ## Execution plan
 - <3-7 short ordered steps>
 
+## Optional: Area coverage plan
+- <root docs / skills / tools / qa / improvement / templates / other areas>
+
+## Optional: Run budget allocation
+- <area>: <planned runs>
+
 ## Constraints
 - Must not break:
 - Must not change:

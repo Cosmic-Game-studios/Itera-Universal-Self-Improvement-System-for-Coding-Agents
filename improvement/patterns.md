@@ -29,3 +29,8 @@ Recommended format:
 - Context: evaluation-first loops are easier to review and keep aligned when the intended order of attack is visible up front.
 - Signal: the workflow became more robust once the skill, fallback docs, template, and QA all required an explicit execution plan instead of leaving planning implicit.
 - Caveat: keep the plan short and concrete; the point is to guide the iteration loop, not to create heavyweight ceremony.
+
+## Pattern: split large sweeps into area budgets before spending runs
+- Context: very large repository-wide efforts become noisy and hard to keep bounded when all files share one flat iteration queue.
+- Signal: program-mode guidance is clearer and safer when the repository is mapped into areas with explicit run budgets and checkpoints between areas.
+- Caveat: area budgets are starting points, not rigid promises; reallocate when evidence says one area is lower value than expected.

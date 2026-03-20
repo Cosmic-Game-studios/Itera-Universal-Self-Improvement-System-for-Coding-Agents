@@ -29,6 +29,11 @@ For meaningful software-engineering tasks, use an evaluation-first improvement l
 Use fast-loop evals for cheap iteration and full gates before the final keep decision whenever broad validation is expensive.
 Call out proxy-only results explicitly.
 
+## Large program mode
+
+If scope spans many areas or a very large run budget, split the repository into area workstreams first.
+Allocate a run budget per area and avoid one giant cross-repository diff.
+
 ## Missing evals
 
 If a task has no credible evaluation, create the smallest one that makes progress real before broad edits.

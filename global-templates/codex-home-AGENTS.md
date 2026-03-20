@@ -29,6 +29,11 @@ For non-trivial software-engineering tasks, default to this evaluation-first loo
 When a task has expensive validation, use fast-loop evals for each iteration and full gates before the final keep decision.
 Do not present a proxy-only result as fully validated.
 
+## Large program mode
+
+If scope spans many areas or a very large run budget, split the repository into area workstreams first.
+Allocate a run budget per area and avoid one giant cross-repository diff.
+
 ## Missing evals
 
 When the task lacks a real evaluation, create the smallest credible one before broad edits.

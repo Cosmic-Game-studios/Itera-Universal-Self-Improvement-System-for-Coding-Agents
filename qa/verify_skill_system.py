@@ -38,6 +38,7 @@ for rel in [
     "improvement/templates/current-task.md",
     "improvement/templates/eval-contract.md",
     "tools/pattern_recognition.py",
+    "tools/repo_area_plan.py",
 ]:
     add(
         f"exists:{rel}",
@@ -113,6 +114,16 @@ for name, text in [
     ("readme_mentions_execution_plan", readme),
 ]:
     add(name, "execution plan" in text.lower(), "mentions execution plan explicitly")
+for name, text in [
+    ("codex_skill_mentions_program_mode", codex_skill),
+    ("claude_skill_mentions_program_mode", claude_skill),
+    ("agents_mention_program_mode", agents),
+    ("claude_mention_program_mode", claude),
+    ("global_codex_mentions_program_mode", global_codex),
+    ("global_claude_mentions_program_mode", global_claude),
+    ("readme_mentions_program_mode", readme),
+]:
+    add(name, "program mode" in text.lower(), "mentions large-program mode explicitly")
 
 # Universal coverage heuristic
 combined = "\n".join([codex_skill, eval_catalog, readme]).lower()
@@ -187,6 +198,11 @@ add(
     "## Execution plan" in read("improvement/current-task.md"),
     "improvement/current-task.md includes an execution plan section",
 )
+add(
+    "template_mentions_area_coverage",
+    "## Optional: Area coverage plan" in current_task and "## Optional: Run budget allocation" in current_task,
+    "improvement/templates/current-task.md includes optional area coverage and run budget sections",
+)
 
 # Ledger integrity
 ledger_payloads: list[dict[str, object]] = []
@@ -257,6 +273,49 @@ add(
     "pattern_helper_returns_suggestions",
     pattern_tool_ok and pattern_tool_has_suggestions and pattern_tool_matches_ledger,
     "pattern helper returns at least one suggestion and reports the live ledger size correctly",
+)
+
+repo_area_planner_ok = False
+repo_area_planner_budget_ok = False
+repo_area_planner_has_areas = False
+try:
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "tools" / "repo_area_plan.py"),
+            "--root",
+            str(ROOT),
+            "--budget",
+            "600",
+            "--format",
+            "json",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    planner_payload = json.loads(result.stdout)
+    if isinstance(planner_payload, dict):
+        repo_area_planner_ok = True
+        areas = planner_payload.get("areas", [])
+        repo_area_planner_has_areas = isinstance(areas, list) and len(areas) > 0
+        repo_area_planner_budget_ok = sum(
+            area.get("suggested_runs", 0)
+            for area in areas
+            if isinstance(area, dict)
+        ) == 600
+except (OSError, subprocess.CalledProcessError, json.JSONDecodeError):
+    repo_area_planner_ok = False
+
+add(
+    "repo_area_planner_executes",
+    repo_area_planner_ok,
+    "repo area planner executes and returns JSON for a 600-run sweep",
+)
+add(
+    "repo_area_planner_allocates_budget",
+    repo_area_planner_ok and repo_area_planner_has_areas and repo_area_planner_budget_ok,
+    "repo area planner returns at least one area and allocates the full 600-run budget",
 )
 
 # Durable patterns

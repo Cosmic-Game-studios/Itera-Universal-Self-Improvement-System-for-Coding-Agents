@@ -36,6 +36,12 @@ From the user prompt and repository, determine:
 
 If `improvement/current-task.md` already exists, update it instead of creating a conflicting version.
 
+For large program mode, also determine:
+
+- area coverage map
+- run budget per area
+- checkpoint boundaries between areas
+
 ## Files to maintain
 
 - `improvement/current-task.md`
@@ -43,6 +49,8 @@ If `improvement/current-task.md` already exists, update it instead of creating a
 - optionally `improvement/patterns.md` for durable lessons
 
 If the `improvement/` directory does not exist, create it and initialize the above files.
+
+If the repository ships a planner such as `tools/repo_area_plan.py`, use it for large multi-area programs before broad edits.
 
 ## Step 1: Create the task contract and execution plan
 
@@ -91,6 +99,19 @@ Good hypotheses are:
 - narrow in scope
 
 Bad hypotheses are vague or require changing many systems at once.
+
+## Program mode for large sweeps
+
+When the user asks for a broad repository sweep, many files, many areas, or a very large budget such as a 600-run program:
+
+1. do not treat the work as one giant flat queue
+2. map the repository into areas first
+3. assign a sub-budget to each area
+4. run one area at a time with its own checkpoints
+5. keep the best known state between areas
+
+For program mode, prefer an explicit area coverage plan and run budget allocation in `improvement/current-task.md`.
+If a planner tool is available, use it before assigning budgets manually.
 
 ## Step 4: Run the iteration loop
 
