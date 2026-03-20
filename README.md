@@ -1,6 +1,10 @@
 # Universal Self-Improvement Skill System for SWE
 
-A cross-tool starter kit for turning Karpathy-style `autoresearch` into a **general software-engineering improvement loop** that works for:
+If you want coding agents to stop making one-shot guesses and start behaving more like careful engineers, this repo gives you the scaffolding.
+
+A cross-tool starter kit for turning Karpathy-style `autoresearch` into a **general software-engineering improvement loop** with baselines, gates, rollback discipline, and iteration logs.
+
+It works for:
 
 - coding features
 - bug fixing
@@ -11,6 +15,13 @@ A cross-tool starter kit for turning Karpathy-style `autoresearch` into a **gene
 - performance work
 - build / infra / deployment changes
 - data and pipeline tasks
+
+## Why This Repo Is Useful
+
+- It turns agent work from "best effort" into a measured improvement loop
+- It works across Codex and Claude Code instead of locking you to one tool
+- It reuses the tests, builds, benchmarks, and checks your repository already has
+- It leaves behind a task contract and iteration ledger that make agent work easier to review and trust
 
 ## Core idea
 
@@ -48,6 +59,38 @@ Examples:
 - Infra: fast = format + validate + dry-run; full = policy checks + broader rollout review
 
 This makes the loop practical across many task shapes.
+
+## With The Skill vs Without The Skill
+
+```mermaid
+flowchart LR
+    subgraph W[Without the skill]
+        W1[One-shot prompt]
+        W2[Implicit success criteria]
+        W3[Ad hoc checks]
+        W4[Harder to compare alternatives]
+        W5[Higher regression risk]
+        W1 --> W2 --> W3 --> W4 --> W5
+    end
+
+    subgraph S[With the skill]
+        S1[Task contract]
+        S2[Baseline]
+        S3[One hypothesis at a time]
+        S4[Fast-loop and full-gate evals]
+        S5[Keep or revert]
+        S6[Ledger and reusable patterns]
+        S1 --> S2 --> S3 --> S4 --> S5 --> S6
+    end
+```
+
+| Without the skill | With the skill |
+| --- | --- |
+| The agent often makes one big guess | The agent works from an explicit task contract |
+| Success criteria can stay implicit | Success criteria, gates, and metrics are defined up front |
+| Checks tend to be ad hoc or incomplete | Fast-loop evals and full gates are part of the loop |
+| It is harder to compare alternatives | Each iteration can be kept or reverted against a baseline |
+| Useful context is easy to lose between attempts | The task and results are recorded in `improvement/` artifacts |
 
 ## Why this repo is structured this way
 
