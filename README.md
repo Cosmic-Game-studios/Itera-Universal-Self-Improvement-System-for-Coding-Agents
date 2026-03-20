@@ -131,6 +131,36 @@ Instead, it changes how the current coding agent operates:
 - `.agents/skills/swe-self-improve/agents/openai.yaml` keeps the skill **manual-only** by setting `allow_implicit_invocation: false`
 - the agent then writes and updates the persistent artifacts under `improvement/`
 
+Two complementary views help explain it:
+
+### System view
+
+```mermaid
+flowchart LR
+    U[User]
+    I[Explicit skill invocation]
+    O[openai.yaml manual-only guard]
+    S[SKILL.md improvement loop]
+    A[AGENTS.md fallback workflow]
+    E[eval-catalog.md evaluation guidance]
+    G[Current coding agent]
+    T[improvement/current-task.md]
+    L[improvement/ledger.jsonl]
+
+    U --> I
+    O --> I
+    I --> G
+    S --> G
+    A --> G
+    E --> G
+    G --> T
+    G --> L
+    T --> G
+    L --> G
+```
+
+### Iteration flow
+
 ```mermaid
 flowchart TD
     U["User invokes swe-self-improve in Codex"] --> D{"Skill explicitly invoked?"}
