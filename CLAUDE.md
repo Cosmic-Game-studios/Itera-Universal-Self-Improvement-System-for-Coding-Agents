@@ -73,6 +73,7 @@ Examples: failing test, benchmark, build check, accessibility check, visual snap
 Use `improvement/ledger.jsonl` for structured iteration logs.
 If the repository ships helper scripts such as `tools/bootstrap_task.py` or `tools/log_iteration.py`, prefer them for scaffolding and validated ledger appends.
 If the repository ships `tools/memory_context.py`, use it before baseline and between iterations to refresh working, episodic, learned, and procedural memory.
+If the repository ships `tools/rank_hypotheses.py`, use it when multiple plausible next hypotheses exist or when the loop needs an explicit replan after plateau or recent failures.
 If the repository ships `tools/score_iteration.py`, use it to compare the candidate against the current best state before the keep-or-revert call.
 If the repository ships `tools/loop_state.py`, use it as an advisory loop-review step before continuing or stopping.
 If the repository ships `tools/promote_patterns.py`, use it to review and optionally apply candidate durable lessons instead of copy-pasting patterns by hand.

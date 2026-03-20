@@ -112,6 +112,8 @@ Before generating hypotheses, refresh memory from:
 Generate 2-5 plausible improvement hypotheses.
 Rank them by expected upside divided by risk and implementation cost.
 Start with the smallest high-leverage hypothesis.
+If the repository ships `tools/rank_hypotheses.py`, use it to validate the backlog and rank the candidates before choosing the next iteration.
+When loop state is flat or recent failures stack up, prefer a ranking mode that explicitly changes search strategy instead of pretending the same exploit heuristic should always win.
 
 Good hypotheses are:
 
@@ -150,6 +152,7 @@ For each iteration:
 
 If the repository ships `tools/loop_state.py`, use it after logging and before deciding whether to continue, replan, or stop.
 If the repository ships `tools/memory_context.py`, use it after logging to remind yourself which mistakes, fixes, and durable patterns should influence the next iteration.
+If the repository ships `tools/rank_hypotheses.py`, use it after loop-state review when you need to choose among multiple next hypotheses or switch into a plateau/recovery search mode.
 If the repository ships `tools/score_iteration.py`, use it after the relevant evals to compare the candidate against the current best state with explicit secondary-metric rules before making the keep-or-revert decision.
 If the repository ships `tools/promote_patterns.py`, use it when deciding whether ledger learnings should graduate into `improvement/patterns.md`, and keep writes explicit with review or `--apply`.
 

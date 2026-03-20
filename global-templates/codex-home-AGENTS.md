@@ -45,6 +45,7 @@ Examples: failing test, benchmark, build check, contract test, visual snapshot, 
 When the repository contains `improvement/` templates or a self-improvement skill, use them.
 If the repository ships helper scripts for task scaffolding or validated ledger appends, prefer them over ad hoc manual edits.
 If the repository ships a memory helper such as `tools/memory_context.py`, use it to refresh working memory, episodic memory, learned memory, and procedural memory before new hypotheses.
+If the repository ships a hypothesis-ranking helper such as `tools/rank_hypotheses.py`, use it when several next steps look plausible or when a plateau means the search strategy should change.
 If the repository ships an iteration scoring helper such as `tools/score_iteration.py`, use it before the final keep-or-revert decision.
 If the repository ships a loop-state helper, use it between iterations as an advisory continue/stop review.
 If the repository ships a pattern-promotion helper such as `tools/promote_patterns.py`, use it to review or apply durable lessons instead of manually duplicating ledger learnings into patterns.

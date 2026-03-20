@@ -132,6 +132,7 @@ def render_task_contract(args: argparse.Namespace) -> str:
             "- Learned memory: improvement/patterns.md",
             "- Procedural memory: AGENTS.md / CLAUDE.md / SKILL.md",
             "- Refresh command: <tools/memory_context.py command if the repo ships one>",
+            "- Ranking command: <tools/rank_hypotheses.py command if the repo ships one>",
             "- Mistakes to avoid: <fill after reviewing prior runs>",
             "- Reusable fixes: <fill after reviewing prior runs>",
         ]

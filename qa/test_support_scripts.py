@@ -55,6 +55,8 @@ class SupportScriptTests(unittest.TestCase):
         self.assertIn("- Task ID: 2026-03-20-demo-task", text)
         self.assertIn("## Execution plan", text)
         self.assertIn("## Memory refresh", text)
+        self.assertIn("Ranking command", text)
+        self.assertIn("tools/rank_hypotheses.py", text)
         self.assertIn("## Full gates", text)
         self.assertIn("## Evaluation commands", text)
         self.assertIn("python3 qa/verify_skill_system.py", text)

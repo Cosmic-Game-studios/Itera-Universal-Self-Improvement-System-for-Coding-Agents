@@ -1,0 +1,59 @@
+{
+  "hypotheses": [
+    {
+      "id": "tighten-core-guardrail",
+      "summary": "Turn an important prose-only keep-or-revert guardrail into an executable helper.",
+      "kind": "exploit",
+      "expected_upside": 5,
+      "implementation_cost": 2,
+      "risk": 1,
+      "confidence": 4,
+      "reversibility": 5,
+      "evidence": "measured",
+      "notes": "Best when the repo already describes the rule clearly but still applies it manually.",
+      "related_patterns": [
+        "prefer explicit scoring rules over opaque overall scores"
+      ],
+      "related_prevention_rules": [
+        "Before keeping a candidate state, compare it against the current best iteration with explicit guardrails instead of relying only on an informal prose judgment."
+      ],
+      "blocked_by": []
+    },
+    {
+      "id": "plateau-escape-probe",
+      "summary": "Try a more exploratory helper or heuristic when recent kept iterations have gone flat.",
+      "kind": "explore",
+      "expected_upside": 4,
+      "implementation_cost": 3,
+      "risk": 2,
+      "confidence": 2,
+      "reversibility": 4,
+      "evidence": "inferred",
+      "notes": "Useful when loop-state review says the current search is plateauing.",
+      "related_patterns": [
+        "review loop state before spending another iteration"
+      ],
+      "related_prevention_rules": [],
+      "blocked_by": []
+    },
+    {
+      "id": "stabilize-missing-contract",
+      "summary": "Stabilize a flaky workflow edge before attempting a broader optimization.",
+      "kind": "stabilize",
+      "expected_upside": 3,
+      "implementation_cost": 1,
+      "risk": 1,
+      "confidence": 4,
+      "reversibility": 5,
+      "evidence": "measured",
+      "notes": "Prefer this when recent failures suggest the loop needs a cleaner foundation first.",
+      "related_patterns": [
+        "script the repetitive workflow edges"
+      ],
+      "related_prevention_rules": [
+        "Promote ledger learnings into patterns.md through an explicit deduped review step instead of copying notes across memory layers by hand."
+      ],
+      "blocked_by": []
+    }
+  ]
+}

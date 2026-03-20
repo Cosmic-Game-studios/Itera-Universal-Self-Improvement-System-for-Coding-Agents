@@ -64,3 +64,8 @@ Recommended format:
 - Context: working memory, episodic memory, and learned memory drift apart quickly when durable lessons are copied over from the ledger by hand.
 - Signal: a promotion helper that combines recognition signals, structured prevention rules, and duplicate filtering makes it easier to grow `improvement/patterns.md` without adding obvious repeats or manual copy-paste churn.
 - Caveat: promotion is still a review step; single-episode rules and generic file-area suggestions should not be treated as durable learned memory without judgment.
+
+## Pattern: change the hypothesis search mode when the loop signal changes
+- Context: self-improvement slows down when the next hypothesis is chosen the same way regardless of whether the loop is improving, flat, or recovering from recent failed iterations.
+- Signal: a loop-state-aware ranking helper makes the next move more deliberate by preferring exploit ideas during progress, exploratory ideas during plateaus, and stabilizing ideas during recovery.
+- Caveat: mode-aware ranking is a decision aid, not an autopilot; the shortlist still needs human review and task-specific judgment.

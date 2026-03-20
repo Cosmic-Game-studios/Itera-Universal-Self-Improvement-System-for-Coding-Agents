@@ -26,12 +26,14 @@
 - Learned memory: `improvement/patterns.md`
 - Procedural memory: `AGENTS.md` / `CLAUDE.md` / `SKILL.md`
 - Refresh command: <run `tools/memory_context.py` here if the repo ships one>
+- Ranking command: <run `tools/rank_hypotheses.py` here if the repo ships one>
 - Promotion command: <run `tools/promote_patterns.py` here if the repo ships one>
 - Mistakes to avoid:
 - Reusable fixes:
 
 ## Fast-loop evals
 - <cheap checks run each iteration>
+- <rank_hypotheses helper command if the repo ships one>
 - <score_iteration helper command if the repo ships one>
 - <loop-state helper command if the repo ships one>
 

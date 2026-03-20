@@ -501,6 +501,28 @@ python3 tools/log_iteration.py \
   --summary "Baseline entry."
 ```
 
+## Hypothesis ranking helper
+
+The `tools/rank_hypotheses.py` script operationalizes the part of the loop that is usually left vague: choosing the best next hypothesis.
+It validates a structured backlog, reads the current loop state, and ranks exploit, explore, and stabilize ideas with a mode that can change when the loop is improving, flat, or recovering from recent failures.
+
+It is designed to make self-improvement steeper, not just cleaner:
+
+- `exploit` mode pushes grounded follow-ups when recent progress is working
+- `balanced` mode keeps options open when the signal is mixed
+- `plateau_escape` mode rewards exploratory ideas when progress has flattened
+- `recovery` mode prefers stabilizing work after repeated failed iterations
+
+Run it with:
+
+```bash
+python3 tools/rank_hypotheses.py --backlog improvement/templates/hypothesis-backlog.json --task improvement/current-task.md --ledger improvement/ledger.jsonl --format summary
+python3 tools/rank_hypotheses.py --backlog improvement/templates/hypothesis-backlog.json --task improvement/current-task.md --ledger improvement/ledger.jsonl --format json
+```
+
+Treat the ranking as a decision aid, not a replacement for engineering judgment.
+The point is to make the next move explicit, reviewable, and mode-aware instead of defaulting to intuition.
+
 ## Iteration scoring helper
 
 The `tools/score_iteration.py` script compares one candidate iteration against a reference state using the published fitness vector:
@@ -553,9 +575,10 @@ Recommended approach:
 2. set fast-loop evals and full gates up front
 3. log a baseline in `improvement/ledger.jsonl`
 4. spend the remaining budget on small reversible hypotheses
-5. keep only iterations that improve the support surface without breaking green gates
-6. review promotion candidates with `tools/promote_patterns.py`
-7. extract only the durable lessons that survive that review into `improvement/patterns.md`
+5. rank the next hypotheses explicitly when several plausible ideas exist
+6. keep only iterations that improve the support surface without breaking green gates
+7. review promotion candidates with `tools/promote_patterns.py`
+8. extract only the durable lessons that survive that review into `improvement/patterns.md`
 
 This repository's own ledger can be used as a concrete example of that style of self-application.
 

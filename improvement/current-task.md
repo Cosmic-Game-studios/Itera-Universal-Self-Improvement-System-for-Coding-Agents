@@ -1,38 +1,38 @@
 # Current task
 
-- Task ID: 2026-03-20-memory-promotion-hardening
-- Task name: Operationalize durable memory promotion from the ledger
+- Task ID: 2026-03-20-hypothesis-ranking-hardening
+- Task name: Operationalize hypothesis ranking for stronger self-improvement
 - Task type: feature
-- Desired outcome: Add a deterministic helper that turns recurring ledger learnings into candidate or applied durable patterns for improvement/patterns.md, with transparent dedupe instead of manual copy-paste.
+- Desired outcome: Add a deterministic helper that ranks candidate hypotheses using leverage, risk, cost, confidence, reversibility, and loop-state-aware mode selection so the next iteration is chosen more intelligently.
 - Non-goals:
-- Blindly append every ledger memory note into patterns.md without review.
+- Replace engineering judgment with a single opaque score.
+- Auto-generate code changes instead of helping the team rank hypotheses.
 - Introduce third-party Python dependencies.
-- Replace the existing pattern_recognition helper instead of building on it.
 
 ## Execution plan
-- Rewrite the live task contract for memory promotion and capture a fresh baseline.
-- Implement a promote_patterns helper with dry-run output, existing-pattern dedupe, and explicit apply mode.
-- Add regression tests for candidate generation, dedupe behavior, and apply mode.
-- Wire the new helper into docs, workflow guidance, and repository QA.
+- Rewrite the live task contract for hypothesis ranking and capture a fresh baseline.
+- Implement a rank_hypotheses helper with explicit backlog input and loop-state-aware ranking modes.
+- Add regression tests for validation, ranking order, and automatic mode selection.
+- Wire the helper into the skill docs, templates, bootstrapper, README, and repository QA.
 - Run full verification, log the kept result, review the final diff, and publish the improved state.
 
 ## Optional: Area coverage plan
 - tools
 - qa
 - docs-and-skill-guidance
-- improvement-memory-artifacts
+- improvement-templates-and-artifacts
 
 ## Optional: Run budget allocation
 - tools: 1
 - qa: 1
 - docs-and-skill-guidance: 0
-- improvement-memory-artifacts: 0
+- improvement-templates-and-artifacts: 0
 
 ## Constraints
 - Use only the Python standard library.
-- Keep promotion transparent: dry-run by default and explicit apply mode for writing patterns.md.
-- Stay compatible with the current ledger schema and existing durable-pattern format.
-- Prefer promoting concise reusable lessons over noisy task-specific trivia.
+- Keep the ranking logic transparent and reason-oriented instead of pretending it can replace judgment.
+- Stay compatible with the existing task contract, ledger, and memory model.
+- Bias the helper toward stronger self-improvement by making plateau or failure states change the ranking mode explicitly.
 
 ## Memory refresh
 - Working memory: improvement/current-task.md
@@ -40,61 +40,62 @@
 - Learned memory: improvement/patterns.md
 - Procedural memory: AGENTS.md / CLAUDE.md / SKILL.md
 - Refresh command: python3 tools/memory_context.py --task improvement/current-task.md --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format summary
-- Promotion command: python3 tools/promote_patterns.py --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format summary
-- Mistakes to avoid: promoting one-off notes into durable patterns would recreate the same ambiguity we just removed from scoring and memory logging.
-- Mistakes to avoid: silently rewriting `improvement/patterns.md` would make the learned-memory layer harder to trust and review.
-- Reusable fixes: reuse the existing pattern-recognition signals and the structured `memory` payload from the ledger instead of inventing a second heuristic universe.
-- Reusable fixes: keep the helper dry-run by default, apply only on explicit request, and dedupe against existing durable pattern titles before writing.
+- Ranking command: python3 tools/rank_hypotheses.py --backlog improvement/templates/hypothesis-backlog.json --task improvement/current-task.md --ledger improvement/ledger.jsonl --format summary
+- Mistakes to avoid: keep-or-revert decisions were still mostly described in prose, which made the published fitness vector harder to apply consistently.
+- Mistakes to avoid: loop-state review could say when to continue or replan, but it could not yet rank a backlog and switch search mode explicitly.
+- Reusable fixes: use explicit, reasoned scoring when a loop decision should not rely on intuition alone.
+- Reusable fixes: favor thin helpers that make the next loop step operational, reviewable, and compatible with the existing memory layers.
+- Reusable fixes: make the next-hypothesis choice mode-aware so plateau and recovery states do not keep spending runs the same way as steady progress.
 
 ## Fast-loop evals
 - python3 -m unittest discover -s qa -p 'test_*.py'
 - python3 qa/verify_skill_system.py
-- python3 tools/promote_patterns.py --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format summary
+- python3 tools/rank_hypotheses.py --backlog improvement/templates/hypothesis-backlog.json --task improvement/current-task.md --ledger improvement/ledger.jsonl --format summary
 
 ## Full gates
-- Verify that the repository ships a usable promotion helper, green tests, green QA, and coherent docs for candidate/apply memory promotion.
+- Verify that the repository ships a usable hypothesis-ranking helper, green tests, green QA, and coherent docs for loop-state-aware next-hypothesis selection.
 - python3 -m unittest discover -s qa -p 'test_*.py'
 - python3 qa/verify_skill_system.py
-- python3 tools/promote_patterns.py --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format json
-- rg -n 'promote_patterns|memory promotion|pattern promotion|durable pattern promotion' README.md .agents/skills/swe-self-improve/SKILL.md .claude/skills/swe-self-improve/SKILL.md AGENTS.md CLAUDE.md global-templates improvement/templates qa tools
+- python3 tools/rank_hypotheses.py --backlog improvement/templates/hypothesis-backlog.json --task improvement/current-task.md --ledger improvement/ledger.jsonl --format json
+- rg -n 'rank_hypotheses|hypothesis ranking|next hypothesis|plateau_escape|exploit|explore|replan' README.md .agents/skills/swe-self-improve/SKILL.md .claude/skills/swe-self-improve/SKILL.md AGENTS.md CLAUDE.md global-templates improvement/templates qa tools
 
 ## Primary metric
-- Name: memory_promotion_helper_operationally_available
+- Name: hypothesis_ranking_helper_operationally_available
 - Direction: higher_is_better
-- Baseline: the repository can suggest pattern candidates with pattern_recognition.py, but it does not yet ship a helper that dedupes against patterns.md and promotes durable ledger learnings in a controlled way.
-- Target: the repository ships a deterministic memory-promotion helper, regression tests, docs, and QA so durable ledger learnings can be promoted into patterns.md without manual copy-paste churn.
+- Baseline: the skill describes forming and ranking 2-5 hypotheses, but it does not yet ship an executable helper for backlog validation, mode-aware ranking, and next-hypothesis selection.
+- Target: the repository ships a deterministic hypothesis-ranking helper, regression tests, docs, and QA so hypothesis selection is more deliberate and self-improvement can climb faster.
 
 ## Secondary metrics
 - QA verifier remains green
 - Existing unit tests remain green
-- Pattern dedupe stays deterministic
-- Promotion output remains transparent instead of silently mutating patterns.md
+- Ranking output remains transparent and explainable
+- Plateau or failure states change ranking mode deterministically
 
 ## Evaluation commands
 ```bash
 python3 -m unittest discover -s qa -p 'test_*.py'
 python3 qa/verify_skill_system.py
-python3 tools/promote_patterns.py --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format summary
-python3 tools/promote_patterns.py --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format json
-rg -n 'promote_patterns|memory promotion|pattern promotion|durable pattern promotion' README.md .agents/skills/swe-self-improve/SKILL.md .claude/skills/swe-self-improve/SKILL.md AGENTS.md CLAUDE.md global-templates improvement/templates qa tools
+python3 tools/rank_hypotheses.py --backlog improvement/templates/hypothesis-backlog.json --task improvement/current-task.md --ledger improvement/ledger.jsonl --format summary
+python3 tools/rank_hypotheses.py --backlog improvement/templates/hypothesis-backlog.json --task improvement/current-task.md --ledger improvement/ledger.jsonl --format json
+rg -n 'rank_hypotheses|hypothesis ranking|next hypothesis|plateau_escape|exploit|explore|replan' README.md .agents/skills/swe-self-improve/SKILL.md .claude/skills/swe-self-improve/SKILL.md AGENTS.md CLAUDE.md global-templates improvement/templates qa tools
 ```
 
 ## Measurement notes
 - deterministic or noisy: deterministic
-- repeated runs needed: one baseline and one kept implementation run should be sufficient if the helper, docs, and QA land coherently
-- fixed seed / fixed input / fixed budget: fixed repository contents and explicit ledger plus patterns files as input
-- proxy limitations: README and doc scans are structural proxies and must stay paired with helper execution
+- repeated runs needed: one baseline and one kept implementation run should be sufficient if helper, docs, and QA land coherently
+- fixed seed / fixed input / fixed budget: fixed repository contents plus a deterministic example backlog
+- proxy limitations: doc scans are structural proxies and must stay paired with helper execution on a synthetic backlog
 
 ## Iteration budget
 - Max iterations: 2
 - Max task time: one focused implementation pass and one final verification pass
 
 ## Rollback / checkpoint strategy
-- Revert any promotion logic that silently rewrites or duplicates durable patterns.
-- Revert any candidate generation rule that turns weak one-off notes into durable lessons.
+- Revert any ranking rule that hides why a hypothesis won or lost.
+- Revert any mode-selection logic that changes behavior without explicit reasons tied to loop state.
 
 ## Stop conditions
-- The repository ships an executable memory-promotion helper.
+- The repository ships an executable hypothesis-ranking helper.
 - Tests and QA verify the helper and its docs.
-- The helper keeps promotion transparent, deduplicated, and aligned with the published durable-pattern format.
+- The helper keeps ranking transparent and loop-state-aware.
 - Final verification passes cleanly.

@@ -38,6 +38,7 @@ for rel in [
     "improvement/patterns.md",
     "improvement/templates/current-task.md",
     "improvement/templates/eval-contract.md",
+    "improvement/templates/hypothesis-backlog.json",
     "improvement/templates/ledger-entry.json",
     "tools/bootstrap_task.py",
     "tools/memory_context.py",
@@ -45,6 +46,7 @@ for rel in [
     "tools/log_iteration.py",
     "tools/pattern_recognition.py",
     "tools/promote_patterns.py",
+    "tools/rank_hypotheses.py",
     "tools/repo_area_plan.py",
     "tools/score_iteration.py",
     "tools/validate_ledger.py",
@@ -206,6 +208,11 @@ add(
     "README documents the loop state helper",
 )
 add(
+    "readme_mentions_hypothesis_ranking_helper",
+    "## hypothesis ranking helper" in readme.lower() and "tools/rank_hypotheses.py" in readme,
+    "README documents the hypothesis ranking helper",
+)
+add(
     "readme_mentions_20_run_self_application",
     "## 20-run self-application" in readme.lower() and "small reversible hypotheses" in readme.lower(),
     "README documents how to run a bounded 20-run self-application program",
@@ -252,6 +259,20 @@ for name, text in [
         name,
         "score_iteration.py" in text.lower() or "iteration scoring helper" in text.lower(),
         "mentions the iteration scoring helper explicitly",
+    )
+for name, text in [
+    ("codex_skill_mentions_hypothesis_ranking", codex_skill),
+    ("claude_skill_mentions_hypothesis_ranking", claude_skill),
+    ("agents_mention_hypothesis_ranking", agents),
+    ("claude_mention_hypothesis_ranking", claude),
+    ("global_codex_mentions_hypothesis_ranking", global_codex),
+    ("global_claude_mentions_hypothesis_ranking", global_claude),
+    ("readme_mentions_hypothesis_ranking_usage", readme),
+]:
+    add(
+        name,
+        "rank_hypotheses.py" in text.lower() or "hypothesis ranking helper" in text.lower(),
+        "mentions the hypothesis ranking helper explicitly",
     )
 for name, text in [
     ("codex_skill_mentions_pattern_promotion", codex_skill),
@@ -330,9 +351,19 @@ add(
     "improvement/templates/eval-contract.md mentions the iteration scoring helper",
 )
 add(
+    "eval_contract_mentions_hypothesis_ranking",
+    "rank_hypotheses.py" in eval_contract.lower(),
+    "improvement/templates/eval-contract.md mentions the hypothesis ranking helper",
+)
+add(
     "template_has_memory_refresh",
     "## Memory refresh" in current_task,
     "improvement/templates/current-task.md includes a memory refresh section",
+)
+add(
+    "template_mentions_ranking_command",
+    "ranking command" in current_task.lower() and "rank_hypotheses.py" in current_task.lower(),
+    "improvement/templates/current-task.md includes a ranking-command reminder",
 )
 add(
     "template_mentions_promotion_command",
@@ -743,6 +774,93 @@ add(
     "memory_helper_reports_task",
     memory_helper_executes and memory_helper_reports_task,
     "memory brief helper reports the live task id and episodic-memory structure",
+)
+
+hypothesis_ranking_helper_executes = False
+hypothesis_ranking_helper_reports_mode = False
+try:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        backlog_path = Path(tmpdir) / "hypothesis-backlog.json"
+        backlog_path.write_text(
+            json.dumps(
+                {
+                    "hypotheses": [
+                        {
+                            "id": "tighten-known-guardrail",
+                            "summary": "Tighten a known guardrail around the next hypothesis selection.",
+                            "kind": "exploit",
+                            "expected_upside": 4,
+                            "implementation_cost": 2,
+                            "risk": 1,
+                            "confidence": 4,
+                            "reversibility": 4,
+                            "evidence": "measured",
+                            "notes": "Grounded in existing workflow behavior.",
+                            "related_patterns": ["Prefer grounded follow-ups when the loop is already improving."],
+                            "related_prevention_rules": [],
+                            "blocked_by": [],
+                        },
+                        {
+                            "id": "plateau-escape-probe",
+                            "summary": "Probe a more exploratory next hypothesis when the loop goes flat.",
+                            "kind": "explore",
+                            "expected_upside": 4,
+                            "implementation_cost": 1,
+                            "risk": 1,
+                            "confidence": 3,
+                            "reversibility": 4,
+                            "evidence": "inferred",
+                            "notes": "Useful for plateau escape.",
+                            "related_patterns": [],
+                            "related_prevention_rules": ["Switch search mode after a flat loop trend."],
+                            "blocked_by": [],
+                        },
+                    ]
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "rank_hypotheses.py"),
+                "--backlog",
+                str(backlog_path),
+                "--task",
+                str(ROOT / "improvement" / "current-task.md"),
+                "--ledger",
+                str(ROOT / "improvement" / "ledger.jsonl"),
+                "--format",
+                "json",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        payload = json.loads(result.stdout)
+        if isinstance(payload, dict):
+            hypothesis_ranking_helper_executes = True
+            ranked = payload.get("ranked_hypotheses")
+            hypothesis_ranking_helper_reports_mode = (
+                payload.get("selected_mode") in {"exploit", "balanced", "plateau_escape", "recovery"}
+                and isinstance(ranked, list)
+                and len(ranked) > 0
+                and isinstance(payload.get("recommended_next_hypothesis"), str)
+            )
+except (OSError, subprocess.CalledProcessError, json.JSONDecodeError):
+    hypothesis_ranking_helper_executes = False
+
+add(
+    "hypothesis_ranking_helper_executes",
+    hypothesis_ranking_helper_executes,
+    "hypothesis ranking helper executes and returns JSON on a synthetic backlog plus the live loop state",
+)
+add(
+    "hypothesis_ranking_helper_reports_mode",
+    hypothesis_ranking_helper_executes and hypothesis_ranking_helper_reports_mode,
+    "hypothesis ranking helper reports a valid selected mode, ranked candidates, and a recommendation",
 )
 
 score_helper_executes = False
