@@ -25,6 +25,7 @@
 
 ## Full gates
 - <broader checks required before final keep>
+- <ledger validator command for improvement/ledger.jsonl if the repo ships one>
 
 ## Primary metric
 - Name:
@@ -41,6 +42,7 @@
 # fast-loop command 2
 # full-gate command 1
 # full-gate command 2
+# ledger validator command if available
 ```
 
 ## Measurement notes

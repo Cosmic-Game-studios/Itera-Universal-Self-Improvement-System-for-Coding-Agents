@@ -377,6 +377,21 @@ python3 tools/pattern_recognition.py --ledger improvement/ledger.jsonl --format 
 Treat the output as a suggestion layer.
 Review the proposed patterns before copying anything into `improvement/patterns.md`.
 
+## Ledger contract helper
+
+The `tools/validate_ledger.py` script validates the shape and cross-entry rules of the self-improvement ledger.
+Use it after editing `improvement/ledger.jsonl` so the logging contract stays executable instead of drifting into prose-only guidance.
+
+Run it with:
+
+```bash
+python3 tools/validate_ledger.py --ledger improvement/ledger.jsonl --format summary
+python3 tools/validate_ledger.py --ledger improvement/ledger.jsonl --format json
+python3 tools/validate_ledger.py --ledger improvement/templates/ledger-entry.json --single-json --format json
+```
+
+That last command validates the shipped example entry in `improvement/templates/ledger-entry.json`, which helps keep the documentation example aligned with the live ledger contract.
+
 ## 20-run self-application
 
 If you want to use the skill on this repository itself, treat it like a bounded program instead of an open-ended rewrite.

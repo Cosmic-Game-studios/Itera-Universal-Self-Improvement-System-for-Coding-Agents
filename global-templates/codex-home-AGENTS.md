@@ -42,4 +42,5 @@ Examples: failing test, benchmark, build check, contract test, visual snapshot, 
 ## Logging
 
 When the repository contains `improvement/` templates or a self-improvement skill, use them.
+If the repository also ships a ledger validator, run it after appending iteration logs and before the final keep decision.
 Otherwise keep short structured notes about baseline, hypotheses, results, and keep/discard decisions.

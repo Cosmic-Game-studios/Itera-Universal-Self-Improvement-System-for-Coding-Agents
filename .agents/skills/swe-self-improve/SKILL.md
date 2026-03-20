@@ -50,6 +50,7 @@ For large program mode, also determine:
 If the `improvement/` directory does not exist, create it and initialize the above files.
 
 If the repository ships a planner such as `tools/repo_area_plan.py`, use it for large multi-area programs before broad edits.
+If the repository ships a ledger validator such as `tools/validate_ledger.py`, run it after updating `improvement/ledger.jsonl` and before finalizing a kept state.
 
 ## Step 1: Create the task contract and execution plan
 
@@ -192,6 +193,9 @@ For each important claim, mark it as one of:
 - `speculative`
 
 Prefer measured evidence whenever possible.
+
+If the repository ships a validator such as `tools/validate_ledger.py`, use it on `improvement/ledger.jsonl` after appending entries.
+If the repository also ships an example object such as `improvement/templates/ledger-entry.json`, validate that too when changing the documented logging contract.
 
 ## Fitness vector
 

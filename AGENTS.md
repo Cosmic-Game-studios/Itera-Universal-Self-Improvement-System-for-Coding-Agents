@@ -68,6 +68,7 @@ Use git to inspect diffs and revert failed iterations cleanly.
 
 Use `improvement/ledger.jsonl` for iteration logs.
 Keep logs machine-readable.
+If the repository ships a ledger validator such as `tools/validate_ledger.py`, run it after editing the ledger and before final keep.
 Do not commit transient logs unless the user asks for them in version control.
 
 ## When evals are missing

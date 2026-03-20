@@ -37,3 +37,8 @@ Allocate a run budget per area and avoid one giant cross-repository diff.
 ## Missing evals
 
 If a task has no credible evaluation, create the smallest one that makes progress real before broad edits.
+
+## Logging
+
+When the repository contains `improvement/` templates or a self-improvement skill, use them.
+If the repository also ships a ledger validator, run it after appending iteration logs and before the final keep decision.

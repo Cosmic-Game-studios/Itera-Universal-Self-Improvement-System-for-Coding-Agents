@@ -37,8 +37,10 @@ for rel in [
     "improvement/patterns.md",
     "improvement/templates/current-task.md",
     "improvement/templates/eval-contract.md",
+    "improvement/templates/ledger-entry.json",
     "tools/pattern_recognition.py",
     "tools/repo_area_plan.py",
+    "tools/validate_ledger.py",
 ]:
     add(
         f"exists:{rel}",
@@ -159,10 +161,28 @@ add(
     "README documents the pattern recognition helper",
 )
 add(
+    "readme_mentions_ledger_helper",
+    "## ledger contract helper" in readme.lower() and "tools/validate_ledger.py" in readme,
+    "README documents the ledger contract helper",
+)
+add(
     "readme_mentions_20_run_self_application",
     "## 20-run self-application" in readme.lower() and "small reversible hypotheses" in readme.lower(),
     "README documents how to run a bounded 20-run self-application program",
 )
+for name, text in [
+    ("codex_skill_mentions_ledger_validation", codex_skill),
+    ("claude_skill_mentions_ledger_validation", claude_skill),
+    ("agents_mention_ledger_validation", agents),
+    ("claude_mention_ledger_validation", claude),
+    ("global_codex_mentions_ledger_validation", global_codex),
+    ("global_claude_mentions_ledger_validation", global_claude),
+]:
+    add(
+        name,
+        "validate_ledger" in text.lower() or "ledger validator" in text.lower(),
+        "mentions ledger validation explicitly",
+    )
 
 # Live task contract
 required_task_sections = [
@@ -316,6 +336,62 @@ add(
     "repo_area_planner_allocates_budget",
     repo_area_planner_ok and repo_area_planner_has_areas and repo_area_planner_budget_ok,
     "repo area planner returns at least one area and allocates the full 600-run budget",
+)
+
+ledger_validator_live_ok = False
+ledger_validator_live_matches_count = False
+ledger_validator_template_ok = False
+try:
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "tools" / "validate_ledger.py"),
+            "--ledger",
+            str(ROOT / "improvement" / "ledger.jsonl"),
+            "--format",
+            "json",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    validator_payload = json.loads(result.stdout)
+    if isinstance(validator_payload, dict):
+        ledger_validator_live_ok = validator_payload.get("valid") is True
+        ledger_validator_live_matches_count = validator_payload.get("entry_count") == len(ledger_payloads)
+except (OSError, subprocess.CalledProcessError, json.JSONDecodeError):
+    ledger_validator_live_ok = False
+
+try:
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "tools" / "validate_ledger.py"),
+            "--ledger",
+            str(ROOT / "improvement" / "templates" / "ledger-entry.json"),
+            "--single-json",
+            "--format",
+            "json",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    template_payload = json.loads(result.stdout)
+    if isinstance(template_payload, dict):
+        ledger_validator_template_ok = template_payload.get("valid") is True and template_payload.get("entry_count") == 1
+except (OSError, subprocess.CalledProcessError, json.JSONDecodeError):
+    ledger_validator_template_ok = False
+
+add(
+    "ledger_validator_live_passes",
+    ledger_validator_live_ok and ledger_validator_live_matches_count,
+    "ledger validator passes on the live ledger and reports the correct entry count",
+)
+add(
+    "ledger_validator_template_passes",
+    ledger_validator_template_ok,
+    "ledger validator passes on the example ledger-entry template",
 )
 
 # Durable patterns

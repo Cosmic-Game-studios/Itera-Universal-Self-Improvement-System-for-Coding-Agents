@@ -34,3 +34,8 @@ Recommended format:
 - Context: very large repository-wide efforts become noisy and hard to keep bounded when all files share one flat iteration queue.
 - Signal: program-mode guidance is clearer and safer when the repository is mapped into areas with explicit run budgets and checkpoints between areas.
 - Caveat: area budgets are starting points, not rigid promises; reallocate when evidence says one area is lower value than expected.
+
+## Pattern: turn the ledger contract into an executable check
+- Context: the ledger is the repository's memory for baselines, kept iterations, and durable pattern extraction.
+- Signal: the workflow becomes safer when the live ledger and its example template are both validated by a dedicated tool instead of only being described in prose.
+- Caveat: keep the validator strict on contract shape, but avoid overfitting it to one narrow metric style.
