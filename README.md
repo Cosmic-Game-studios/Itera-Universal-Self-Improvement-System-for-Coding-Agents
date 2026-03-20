@@ -376,6 +376,21 @@ python3 tools/pattern_recognition.py --ledger improvement/ledger.jsonl --format 
 Treat the output as a suggestion layer.
 Review the proposed patterns before copying anything into `improvement/patterns.md`.
 
+## 20-run self-application
+
+If you want to use the skill on this repository itself, treat it like a bounded program instead of an open-ended rewrite.
+
+Recommended approach:
+
+1. define one repository-improvement objective
+2. set fast-loop evals and full gates up front
+3. log a baseline in `improvement/ledger.jsonl`
+4. spend the remaining budget on small reversible hypotheses
+5. keep only iterations that improve the support surface without breaking green gates
+6. extract durable lessons into `improvement/patterns.md`
+
+This repository's own ledger can be used as a concrete example of that style of self-application.
+
 ## Minimal operating discipline
 
 - baseline first

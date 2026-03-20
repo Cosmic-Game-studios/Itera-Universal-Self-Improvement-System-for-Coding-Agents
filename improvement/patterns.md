@@ -9,3 +9,18 @@ Recommended format:
 - Context:
 - Signal:
 - Caveat:
+
+## Pattern: keep `qa_verify` as the universal hard gate
+- Context: every kept self-improvement task in this repository has ended with the structural QA verifier.
+- Signal: the existing ledger shows `qa_verify` passing in every kept run, even when the task focus changed from docs to tooling and publishing.
+- Caveat: this gate is structural, so task-specific tests and runtime checks still need to be paired with it.
+
+## Pattern: verify README changes on GitHub when Mermaid or positioning changes are involved
+- Context: README work in this repository often includes Mermaid diagrams and GitHub-facing presentation changes.
+- Signal: kept README iterations repeatedly paired local QA with a live GitHub README check to catch rendering and presentation issues that local text inspection could miss.
+- Caveat: this is most important for README and diagram edits, not for every internal-only repository change.
+
+## Pattern: update `improvement/` artifacts together with the kept change
+- Context: the repository treats self-improvement as a logged workflow rather than a one-shot edit.
+- Signal: kept runs consistently updated `improvement/current-task.md` and `improvement/ledger.jsonl` alongside the winning change, which made later review and pattern extraction easier.
+- Caveat: avoid dumping transient exploration noise into durable artifacts; record the final kept state and only the iteration history the user asked to preserve.
