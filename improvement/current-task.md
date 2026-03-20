@@ -1,62 +1,64 @@
 # Current task
 
-- Task ID: 2026-03-20-readme-comparison-and-positioning
-- Task name: Add a with-vs-without comparison and strengthen the README positioning
-- Task type: documentation
-- Desired outcome: Make the README more compelling by improving the top-level value proposition and adding a clear comparison that shows how work changes with and without the `swe-self-improve` skill.
-- Non-goals: Misrepresent project capabilities, remove the existing diagrams, or turn the README into hype without substance.
+- Task ID: 2026-03-20-pattern-recognition-tool
+- Task name: Build a ledger-based pattern recognition tool
+- Task type: data
+- Desired outcome: Add a small tool that reads `improvement/ledger.jsonl`, detects recurring successful patterns, and outputs ranked pattern suggestions that can help maintain `improvement/patterns.md`.
+- Non-goals: Introduce external dependencies, invent unsupported benchmark claims, or auto-edit `improvement/patterns.md` without an explicit review step.
 
 ## Constraints
-- Keep the explanation accurate to the current repository behavior.
-- Use GitHub-safe Mermaid syntax.
-- Make the README more persuasive through clarity and structure, not exaggerated claims.
+- Use only the Python standard library.
+- Keep the logic robust for sparse or uneven ledger history.
+- Add tests that cover parsing, normalization, and pattern suggestion behavior.
 
 ## Fast-loop evals
-- `rg -n 'Why This Repo Is Useful|With The Skill vs Without The Skill|Without the skill|With the skill|```mermaid' README.md`
+- `python3 -m unittest discover -s qa -p 'test_*.py'`
+- `python3 tools/pattern_recognition.py --ledger improvement/ledger.jsonl --format markdown`
 - `python3 qa/verify_skill_system.py`
-- `git diff -- README.md`
 
 ## Full gates
-- Verify the README now has a stronger opening and a clear with-vs-without comparison.
+- Verify the tool produces stable suggestions on the current ledger and handles representative synthetic histories.
 - `python3 qa/verify_skill_system.py`
-- Confirm on GitHub that the new Mermaid diagram renders and the README still reads cleanly.
+- `python3 -m unittest discover -s qa -p 'test_*.py'`
+- `python3 tools/pattern_recognition.py --ledger improvement/ledger.jsonl --format json`
 
 ## Primary metric
-- Name: README communicates the value proposition and with-vs-without comparison more clearly
+- Name: pattern recognition tool produces useful ranked suggestions from the ledger
 - Direction: higher_is_better
-- Baseline: The README explains the system well, but the opening is still fairly generic and there is no direct visual comparison between working with the skill and working without it.
-- Target: The README quickly tells visitors why the project is useful and shows the practical difference between using the skill and not using it.
+- Baseline: No dedicated tool exists; `python3 -m unittest discover -s qa -p 'test_*.py'` currently reports `NO TESTS RAN`.
+- Target: The repository contains a tested CLI that emits structured pattern suggestions from ledger history.
 
 ## Secondary metrics
 - QA verifier remains passing
-- GitHub render stays error-free
-- Existing workflow explanation remains accurate
+- Tool output remains deterministic for the same ledger input
+- Current repository instructions and templates remain unchanged in meaning
 
 ## Evaluation commands
 ```bash
 # fast-loop commands
-rg -n 'Why This Repo Is Useful|With The Skill vs Without The Skill|Without the skill|With the skill|```mermaid' README.md
+python3 -m unittest discover -s qa -p 'test_*.py'
+python3 tools/pattern_recognition.py --ledger improvement/ledger.jsonl --format markdown
 python3 qa/verify_skill_system.py
-git diff -- README.md
 
 # full-gate commands
+python3 -m unittest discover -s qa -p 'test_*.py'
+python3 tools/pattern_recognition.py --ledger improvement/ledger.jsonl --format json
 python3 qa/verify_skill_system.py
-git push
 ```
 
 ## Measurement notes
-- deterministic or noisy: deterministic except for GitHub page rendering latency
-- fixed seed / fixed sample / fixed budget: fixed README section and fixed GitHub repository page
-- proxy limitations: quality of positioning is partly qualitative, so live GitHub review is still needed after local checks
+- deterministic or noisy: deterministic
+- fixed seed / fixed sample / fixed budget: fixed ledger file and fixed synthetic test inputs
+- proxy limitations: usefulness of detected patterns is partly heuristic, so tests should assert structure and representative ranking rather than exact prose everywhere
 
 ## Iteration budget
 - Max iterations: 2
-- Time budget: one focused README pass and one GitHub verification pass
+- Time budget: one focused implementation pass and one verification pass
 
 ## Rollback plan
-- Revert the new comparison and positioning sections if they reduce clarity or if the new diagram fails to render on GitHub.
+- Revert the new tool and tests if they produce misleading pattern suggestions or fail deterministic checks.
 
 ## Stop conditions
-- README has a stronger opening and a clear with-vs-without comparison
+- The repository has a working pattern-recognition CLI
+- Tests pass
 - QA verifier passes
-- GitHub renders the new comparison diagram without error

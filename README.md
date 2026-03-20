@@ -361,6 +361,21 @@ python qa/verify_skill_system.py
 
 A generated report is also included in `qa/latest-report.md`.
 
+## Pattern recognition helper
+
+The `tools/pattern_recognition.py` script reads `improvement/ledger.jsonl` and turns recurring successful signals into ranked pattern suggestions.
+It is designed to help you draft durable entries for `improvement/patterns.md` instead of manually scanning the ledger every time.
+
+Run it with:
+
+```bash
+python3 tools/pattern_recognition.py --ledger improvement/ledger.jsonl --format markdown
+python3 tools/pattern_recognition.py --ledger improvement/ledger.jsonl --format json
+```
+
+Treat the output as a suggestion layer.
+Review the proposed patterns before copying anything into `improvement/patterns.md`.
+
 ## Minimal operating discipline
 
 - baseline first
