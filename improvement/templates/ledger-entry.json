@@ -24,6 +24,17 @@
     "bundle_kb": "measured",
     "ux_quality": "inferred"
   },
+  "memory": {
+    "mistakes": [
+      "Skipped the broader regression gate in an earlier draft."
+    ],
+    "fixes": [
+      "Ran the full gate before keeping the change."
+    ],
+    "prevention_rules": [
+      "Do not keep a promising proxy result until the required full-gate eval passes."
+    ]
+  },
   "kept": true,
   "summary": "Improved primary metric without regressions."
 }

@@ -11,6 +11,7 @@ STANDARD_DIRECTIONS = {"lower_is_better", "higher_is_better", "pass_fail"}
 LEGACY_DIRECTIONS = {"clearer_is_better"}
 ACCEPTED_DIRECTIONS = STANDARD_DIRECTIONS | LEGACY_DIRECTIONS
 ALLOWED_EVIDENCE_LABELS = {"measured", "inferred", "speculative"}
+ALLOWED_MEMORY_KEYS = {"mistakes", "fixes", "prevention_rules"}
 
 
 @dataclass(frozen=True)
@@ -188,6 +189,45 @@ def validate_entry(location: str, payload: dict[str, Any]) -> list[ValidationIss
 
     if not is_non_empty_string(payload.get("summary")):
         issues.append(ValidationIssue(location, "'summary' must be a non-empty string"))
+
+    memory = payload.get("memory")
+    if memory is not None:
+        if not isinstance(memory, dict):
+            issues.append(ValidationIssue(location, "'memory' must be an object when present"))
+        else:
+            unknown_keys = sorted(set(memory) - ALLOWED_MEMORY_KEYS)
+            if unknown_keys:
+                issues.append(
+                    ValidationIssue(
+                        location,
+                        f"'memory' contains unknown keys: {', '.join(unknown_keys)}",
+                    )
+                )
+            non_empty_lists = 0
+            for key in sorted(ALLOWED_MEMORY_KEYS):
+                if key not in memory:
+                    continue
+                value = memory[key]
+                if not isinstance(value, list):
+                    issues.append(ValidationIssue(location, f"'memory.{key}' must be a list"))
+                    continue
+                if any(not is_non_empty_string(item) for item in value):
+                    issues.append(
+                        ValidationIssue(
+                            location,
+                            f"'memory.{key}' entries must be non-empty strings",
+                        )
+                    )
+                    continue
+                if value:
+                    non_empty_lists += 1
+            if non_empty_lists == 0:
+                issues.append(
+                    ValidationIssue(
+                        location,
+                        "'memory' must contain at least one non-empty list when present",
+                    )
+                )
 
     return issues
 

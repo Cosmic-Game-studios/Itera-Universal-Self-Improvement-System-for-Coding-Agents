@@ -22,6 +22,7 @@ It works for:
 - It works across Codex and Claude Code instead of locking you to one tool
 - It reuses the tests, builds, benchmarks, and checks your repository already has
 - It leaves behind a task contract and iteration ledger that make agent work easier to review and trust
+- It gives the agent four explicit memory layers so future tasks can reuse past mistakes, fixes, and durable lessons
 
 ## Core idea
 
@@ -91,7 +92,7 @@ flowchart LR
 | Success criteria can stay implicit | Success criteria, gates, and metrics are defined up front |
 | Checks tend to be ad hoc or incomplete | Fast-loop evals and full gates are part of the loop |
 | It is harder to compare alternatives | Each iteration can be kept or reverted against a baseline |
-| Useful context is easy to lose between attempts | The task and results are recorded in `improvement/` artifacts |
+| Useful context is easy to lose between attempts | The task, results, and reusable lessons are recorded in explicit memory artifacts |
 
 ## Why this repo is structured this way
 
@@ -111,10 +112,24 @@ So this kit uses four layers:
    - `.claude/skills/swe-self-improve/` for Claude Code
 
 4. **Persistent improvement artifacts**
-   - `improvement/current-task.md`
-   - `improvement/ledger.jsonl`
-   - `improvement/patterns.md`
+   - `improvement/current-task.md` as working memory
+   - `improvement/ledger.jsonl` as episodic memory
+   - `improvement/patterns.md` as learned memory
    - reusable templates under `improvement/templates/`
+
+## Four memory layers
+
+This repo is designed to make coding-agent self-improvement durable instead of session-local.
+
+| Memory type | Artifact | What it stores |
+| --- | --- | --- |
+| Working memory | `improvement/current-task.md` | the active goal, plan, constraints, evals, and next checks |
+| Episodic memory | `improvement/ledger.jsonl` | what was tried, what worked, what failed, and optional mistakes/fixes/prevention rules |
+| Learned memory | `improvement/patterns.md` | durable lessons that are likely to help again |
+| Procedural memory | `AGENTS.md`, `CLAUDE.md`, and the skill files | the rules for how the agent should work |
+
+The point is not to pretend the agent has hidden weights updates.
+The point is to give it explicit project memory that can be refreshed, reviewed, and improved over time.
 
 ## Install
 
@@ -256,10 +271,26 @@ flowchart TD
 In other words: the skill does not mainly create new agents; it gives the **current** agent a stricter operating system.
 The agent is guided to plan the task, measure a baseline, try one hypothesis at a time, keep or revert changes, and log the outcome in a repeatable way.
 
+## Memory brief helper
+
+The `tools/memory_context.py` script turns the four memory layers back into a usable brief before the next task or iteration.
+It reads the live task contract, the ledger history, and durable patterns, then surfaces relevant past mistakes, reusable fixes, prevention rules, and procedural reminders.
+
+Run it with:
+
+```bash
+python3 tools/memory_context.py --task improvement/current-task.md --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format summary
+python3 tools/memory_context.py --task improvement/current-task.md --ledger improvement/ledger.jsonl --patterns improvement/patterns.md --format json
+```
+
+Treat the result as a transparent reminder layer.
+It should make the next decision better, not pretend to replace engineering judgment.
+
 ## Recommended working model
 
 Use the loop for any non-trivial SWE task.
 The workflow should create or update `improvement/current-task.md` with an execution plan before major edits.
+It should also refresh memory from the task contract, ledger, durable patterns, and procedural instructions before new hypotheses.
 
 Recommended default iteration budget:
 
@@ -353,6 +384,7 @@ The `qa/verify_skill_system.py` script performs a lightweight structural review 
 - invocation flags for Codex and Claude
 - Claude line-budget safety
 - tiered-eval support in the templates
+- memory-model support across working, episodic, learned, and procedural layers
 - universal task coverage across common SWE categories
 - presence of global install templates
 
@@ -422,6 +454,7 @@ python3 tools/bootstrap_task.py \
 
 The `tools/log_iteration.py` script appends one validated entry to `improvement/ledger.jsonl` and re-validates the whole ledger before keeping the change on disk.
 It helps the skill avoid hand-written JSONL mistakes while still keeping the log explicit and reviewable.
+It can also capture reusable mistakes, fixes, and prevention rules in the optional episodic-memory payload.
 
 Run it with:
 
@@ -439,6 +472,9 @@ python3 tools/log_iteration.py \
   --primary-metric-direction higher_is_better \
   --secondary-metric qa_checks=80 \
   --evidence qa_verify=measured \
+  --mistake "Forgot the broader regression gate in the earlier draft." \
+  --fix "Ran the missing broader regression gate before keeping the change." \
+  --prevention-rule "Do not keep proxy-only wins when the task defines a required full gate." \
   --kept true \
   --summary "Baseline entry."
 ```

@@ -20,6 +20,15 @@
 - Must not change:
 - Budget / environment limits:
 
+## Memory refresh
+- Working memory: `improvement/current-task.md`
+- Episodic memory: `improvement/ledger.jsonl`
+- Learned memory: `improvement/patterns.md`
+- Procedural memory: `AGENTS.md` / `CLAUDE.md` / `SKILL.md`
+- Refresh command: <run `tools/memory_context.py` here if the repo ships one>
+- Mistakes to avoid:
+- Reusable fixes:
+
 ## Fast-loop evals
 - <cheap checks run each iteration>
 - <loop-state helper command if the repo ships one>

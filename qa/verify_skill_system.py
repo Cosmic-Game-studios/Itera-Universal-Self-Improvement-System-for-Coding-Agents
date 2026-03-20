@@ -40,6 +40,7 @@ for rel in [
     "improvement/templates/eval-contract.md",
     "improvement/templates/ledger-entry.json",
     "tools/bootstrap_task.py",
+    "tools/memory_context.py",
     "tools/loop_state.py",
     "tools/log_iteration.py",
     "tools/pattern_recognition.py",
@@ -180,6 +181,11 @@ add(
     "README documents the iteration logging helper",
 )
 add(
+    "readme_mentions_memory_helper",
+    "## memory brief helper" in readme.lower() and "tools/memory_context.py" in readme,
+    "README documents the memory brief helper",
+)
+add(
     "readme_mentions_loop_state_helper",
     "## loop state helper" in readme.lower() and "tools/loop_state.py" in readme,
     "README documents the loop state helper",
@@ -203,6 +209,22 @@ for name, text in [
         "mentions ledger validation explicitly",
     )
 for name, text in [
+    ("codex_skill_mentions_memory_model", codex_skill),
+    ("claude_skill_mentions_memory_model", claude_skill),
+    ("agents_mention_memory_model", agents),
+    ("claude_mention_memory_model", claude),
+    ("global_codex_mentions_memory_model", global_codex),
+    ("global_claude_mentions_memory_model", global_claude),
+    ("readme_mentions_memory_model", readme),
+]:
+    lowered = text.lower()
+    add(
+        name,
+        all(phrase in lowered for phrase in ["working memory", "episodic memory", "procedural memory"])
+        and ("learned memory" in lowered or "durable lessons" in lowered),
+        "mentions the four-memory model explicitly",
+    )
+for name, text in [
     ("codex_skill_mentions_loop_review", codex_skill),
     ("claude_skill_mentions_loop_review", claude_skill),
     ("agents_mention_loop_review", agents),
@@ -223,6 +245,7 @@ for name, text in [
 required_task_sections = [
     "## Execution plan",
     "## Constraints",
+    "## Memory refresh",
     "## Fast-loop evals",
     "## Full gates",
     "## Primary metric",
@@ -257,6 +280,16 @@ add(
     "template_mentions_area_coverage",
     "## Optional: Area coverage plan" in current_task and "## Optional: Run budget allocation" in current_task,
     "improvement/templates/current-task.md includes optional area coverage and run budget sections",
+)
+add(
+    "template_has_memory_refresh",
+    "## Memory refresh" in current_task,
+    "improvement/templates/current-task.md includes a memory refresh section",
+)
+add(
+    "live_task_has_memory_refresh",
+    "## Memory refresh" in read("improvement/current-task.md"),
+    "improvement/current-task.md includes a memory refresh section",
 )
 
 # Ledger integrity
@@ -476,6 +509,7 @@ try:
                 for token in [
                     "- Task ID: 2026-03-20-demo-task",
                     "## Execution plan",
+                    "## Memory refresh",
                     "## Full gates",
                     "## Evaluation commands",
                     "python3 qa/verify_skill_system.py",
@@ -528,6 +562,12 @@ try:
                 "qa_checks=80",
                 "--evidence",
                 "qa_verify=measured",
+                "--mistake",
+                "Forgot to refresh memory.",
+                "--fix",
+                "Used the helper instead of guessing.",
+                "--prevention-rule",
+                "Refresh memory before new hypotheses.",
                 "--kept",
                 "true",
                 "--summary",
@@ -561,6 +601,52 @@ add(
     "iteration logging helper appends a validated entry and reports a valid ledger",
 )
 
+memory_helper_executes = False
+memory_helper_reports_task = False
+try:
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "tools" / "memory_context.py"),
+            "--task",
+            str(ROOT / "improvement" / "current-task.md"),
+            "--ledger",
+            str(ROOT / "improvement" / "ledger.jsonl"),
+            "--patterns",
+            str(ROOT / "improvement" / "patterns.md"),
+            "--format",
+            "json",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    payload = json.loads(result.stdout)
+    if isinstance(payload, dict):
+        memory_helper_executes = True
+        working_memory = payload.get("working_memory", {})
+        episodic_memory = payload.get("episodic_memory", {})
+        memory_helper_reports_task = (
+            isinstance(working_memory, dict)
+            and working_memory.get("task_id") == "2026-03-20-agent-memory-hardening"
+            and isinstance(episodic_memory, dict)
+            and isinstance(episodic_memory.get("same_task_history"), list)
+            and isinstance(payload.get("recommended_refresh"), list)
+        )
+except (OSError, subprocess.CalledProcessError, json.JSONDecodeError):
+    memory_helper_executes = False
+
+add(
+    "memory_helper_executes",
+    memory_helper_executes,
+    "memory brief helper executes and returns JSON on the live task, ledger, and patterns",
+)
+add(
+    "memory_helper_reports_task",
+    memory_helper_executes and memory_helper_reports_task,
+    "memory brief helper reports the live task id and episodic-memory structure",
+)
+
 loop_state_helper_executes = False
 loop_state_helper_reports_task = False
 try:
@@ -583,7 +669,7 @@ try:
     if isinstance(payload, dict):
         loop_state_helper_executes = True
         loop_state_helper_reports_task = (
-            payload.get("task_id") == "2026-03-20-loop-review-hardening"
+            payload.get("task_id") == "2026-03-20-agent-memory-hardening"
             and isinstance(payload.get("recommendation"), str)
             and isinstance(payload.get("next_iteration"), int)
             and payload.get("next_iteration") >= 1

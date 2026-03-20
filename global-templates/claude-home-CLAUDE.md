@@ -9,11 +9,12 @@ For meaningful software-engineering tasks, use an evaluation-first improvement l
 
 1. define the task, constraints, and non-goals
 2. create a short execution plan before broad edits
-3. identify fast-loop evals and full gates
-4. establish a baseline when possible
-5. test one hypothesis at a time
-6. keep only changes that clearly win overall
-7. revert failed or low-value iterations
+3. refresh memory from the task contract, ledger, durable patterns, and procedural instructions
+4. identify fast-loop evals and full gates
+5. establish a baseline when possible
+6. test one hypothesis at a time
+7. keep only changes that clearly win overall
+8. revert failed or low-value iterations
 
 ## Universal preferences
 
@@ -42,5 +43,7 @@ If a task has no credible evaluation, create the smallest one that makes progres
 
 When the repository contains `improvement/` templates or a self-improvement skill, use them.
 If the repository ships helper scripts for task scaffolding or validated ledger appends, prefer them over ad hoc manual edits.
+If the repository ships a memory helper such as `tools/memory_context.py`, use it to refresh working memory, episodic memory, learned memory, and procedural memory before new hypotheses.
 If the repository ships a loop-state helper, use it between iterations as an advisory continue/stop review.
 If the repository also ships a ledger validator, run it after appending iteration logs and before the final keep decision.
+When the ledger supports it, record reusable mistakes, fixes, and prevention rules instead of leaving them implicit.

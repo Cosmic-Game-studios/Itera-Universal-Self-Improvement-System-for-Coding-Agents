@@ -14,12 +14,13 @@ Before broad edits, establish:
 1. task type
 2. constraints and non-goals
 3. a short execution plan
-4. fast-loop evals
-5. full gates
-6. primary metric
-7. secondary metrics
-8. iteration budget
-9. rollback strategy
+4. refresh memory from the task contract, ledger, durable patterns, and procedural instructions
+5. fast-loop evals
+6. full gates
+7. primary metric
+8. secondary metrics
+9. iteration budget
+10. rollback strategy
 
 Planning is mandatory for non-trivial work.
 Before major edits, the current task should have an explicit execution plan, even if it is short.
@@ -28,6 +29,7 @@ Before major edits, the current task should have an explicit execution plan, eve
 
 Whenever an evaluation exists, run a baseline before making major changes.
 Document it in `improvement/current-task.md` and log it in `improvement/ledger.jsonl`.
+Treat `improvement/current-task.md` as working memory, `improvement/ledger.jsonl` as episodic memory, `improvement/patterns.md` as learned memory, and this file plus the skill docs as procedural memory.
 
 ## Iteration discipline
 
@@ -35,6 +37,7 @@ Document it in `improvement/current-task.md` and log it in `improvement/ledger.j
 - smallest reversible diff
 - run fast-loop evals each iteration
 - run full-gate evals before final keep when needed
+- refresh memory before forming the next hypothesis so repeated mistakes get caught early
 - review loop state and remaining budget before starting the next hypothesis
 - prefer existing tooling
 - avoid new dependencies unless clearly justified
@@ -69,8 +72,10 @@ Examples: failing test, benchmark, build check, accessibility check, visual snap
 
 Use `improvement/ledger.jsonl` for structured iteration logs.
 If the repository ships helper scripts such as `tools/bootstrap_task.py` or `tools/log_iteration.py`, prefer them for scaffolding and validated ledger appends.
+If the repository ships `tools/memory_context.py`, use it before baseline and between iterations to refresh working, episodic, learned, and procedural memory.
 If the repository ships `tools/loop_state.py`, use it as an advisory loop-review step before continuing or stopping.
 If the repository ships a ledger validator such as `tools/validate_ledger.py`, run it after editing the ledger and before final keep.
+When an iteration teaches something reusable, record mistakes, fixes, and prevention rules in the optional `memory` object in the ledger.
 Use `improvement/patterns.md` only for durable lessons that are likely to matter again.
 
 ## Simplicity bias

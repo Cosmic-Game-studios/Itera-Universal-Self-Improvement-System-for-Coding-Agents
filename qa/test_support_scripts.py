@@ -54,6 +54,7 @@ class SupportScriptTests(unittest.TestCase):
         text = output.read_text(encoding="utf-8")
         self.assertIn("- Task ID: 2026-03-20-demo-task", text)
         self.assertIn("## Execution plan", text)
+        self.assertIn("## Memory refresh", text)
         self.assertIn("## Full gates", text)
         self.assertIn("## Evaluation commands", text)
         self.assertIn("python3 qa/verify_skill_system.py", text)
@@ -117,6 +118,12 @@ class SupportScriptTests(unittest.TestCase):
                 "qa_checks=80",
                 "--evidence",
                 "qa_verify=measured",
+                "--mistake",
+                "Forgot to refresh the ledger contract before appending.",
+                "--fix",
+                "Used the logging helper so the entry stayed valid.",
+                "--prevention-rule",
+                "Log iterations with the helper instead of hand-editing JSONL.",
                 "--kept",
                 "true",
                 "--summary",
@@ -131,6 +138,10 @@ class SupportScriptTests(unittest.TestCase):
 
         payload = json.loads(result.stdout)
         self.assertEqual(payload["ledger_report"]["entry_count"], 1)
+        self.assertEqual(
+            payload["appended"]["memory"]["mistakes"],
+            ["Forgot to refresh the ledger contract before appending."],
+        )
         self.assertTrue(ledger.exists())
         self.assertTrue(validate_ledger(ledger).valid)
 

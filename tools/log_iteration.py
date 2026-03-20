@@ -46,6 +46,24 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--secondary-metric", action="append", default=[], help="Secondary metric as name=value.")
     parser.add_argument("--evidence", action="append", default=[], help="Evidence claim as name=label.")
+    parser.add_argument(
+        "--mistake",
+        action="append",
+        default=[],
+        help="Mistake learned from this iteration. Repeat as needed.",
+    )
+    parser.add_argument(
+        "--fix",
+        action="append",
+        default=[],
+        help="Fix or improvement learned from this iteration. Repeat as needed.",
+    )
+    parser.add_argument(
+        "--prevention-rule",
+        action="append",
+        default=[],
+        help="Reusable prevention rule learned from this iteration. Repeat as needed.",
+    )
     parser.add_argument("--kept", choices=("true", "false"), required=True, help="Whether the iteration was kept.")
     parser.add_argument("--summary", required=True, help="Short summary of the iteration outcome.")
     parser.add_argument(
@@ -107,6 +125,15 @@ def parse_evidence_map(items: list[str]) -> dict[str, str]:
     return mapping
 
 
+def parse_note_list(items: list[str]) -> list[str]:
+    notes: list[str] = []
+    for raw in items:
+        note = raw.strip()
+        if note:
+            notes.append(note)
+    return notes
+
+
 def build_entry(args: argparse.Namespace) -> dict[str, Any]:
     baseline = parse_scalar(args.primary_metric_baseline)
     value = parse_scalar(args.primary_metric_value)
@@ -131,6 +158,13 @@ def build_entry(args: argparse.Namespace) -> dict[str, Any]:
         "kept": args.kept == "true",
         "summary": args.summary,
     }
+    memory = {
+        "mistakes": parse_note_list(args.mistake),
+        "fixes": parse_note_list(args.fix),
+        "prevention_rules": parse_note_list(args.prevention_rule),
+    }
+    if any(memory.values()):
+        entry["memory"] = {key: value for key, value in memory.items() if value}
     issues = validate_entry("entry 1", entry)
     if issues:
         message = "\n".join(f"- {issue.location}: {issue.message}" for issue in issues)

@@ -163,6 +163,76 @@ class ValidateLedgerTests(unittest.TestCase):
         self.assertIn("# Ledger Contract Report", result.stdout)
         self.assertIn("Status: valid", result.stdout)
 
+    def test_optional_memory_payload_is_valid(self) -> None:
+        path = write_file(
+            json.dumps(
+                {
+                    "task_id": "demo-task",
+                    "iteration": 0,
+                    "eval_tier": "fast+full",
+                    "hypothesis": "baseline",
+                    "changes": [],
+                    "hard_gates": {"tests": "pass"},
+                    "primary_metric": {
+                        "name": "quality",
+                        "baseline": 0,
+                        "value": 0,
+                        "direction": "higher_is_better",
+                    },
+                    "secondary_metrics": {"qa_checks": 1},
+                    "evidence": {"quality": "measured"},
+                    "memory": {
+                        "mistakes": ["Forgot a broader regression check."],
+                        "fixes": ["Added the missing regression check."],
+                        "prevention_rules": ["Keep the broader check in the default gate set."],
+                    },
+                    "kept": True,
+                    "summary": "baseline",
+                }
+            )
+            + "\n"
+        )
+
+        report = validate_ledger(path)
+
+        self.assertTrue(report.valid)
+
+    def test_invalid_memory_payload_fails(self) -> None:
+        path = write_file(
+            json.dumps(
+                {
+                    "task_id": "demo-task",
+                    "iteration": 0,
+                    "eval_tier": "fast+full",
+                    "hypothesis": "baseline",
+                    "changes": [],
+                    "hard_gates": {"tests": "pass"},
+                    "primary_metric": {
+                        "name": "quality",
+                        "baseline": 0,
+                        "value": 0,
+                        "direction": "higher_is_better",
+                    },
+                    "secondary_metrics": {"qa_checks": 1},
+                    "evidence": {"quality": "measured"},
+                    "memory": {
+                        "mistakes": [""],
+                        "unknown": ["not allowed"],
+                    },
+                    "kept": True,
+                    "summary": "baseline",
+                }
+            )
+            + "\n"
+        )
+
+        report = validate_ledger(path)
+
+        self.assertFalse(report.valid)
+        messages = [issue.message for issue in report.issues]
+        self.assertTrue(any("unknown keys" in message for message in messages))
+        self.assertTrue(any("entries must be non-empty strings" in message for message in messages))
+
 
 if __name__ == "__main__":
     unittest.main()

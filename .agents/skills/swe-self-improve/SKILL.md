@@ -52,6 +52,18 @@ If the `improvement/` directory does not exist, create it and initialize the abo
 If the repository ships a planner such as `tools/repo_area_plan.py`, use it for large multi-area programs before broad edits.
 If the repository ships a ledger validator such as `tools/validate_ledger.py`, run it after updating `improvement/ledger.jsonl` and before finalizing a kept state.
 
+## Memory model
+
+Treat the workflow artifacts as four explicit memory layers:
+
+- working memory: `improvement/current-task.md`
+- episodic memory: `improvement/ledger.jsonl`
+- learned memory: `improvement/patterns.md`
+- procedural memory: `AGENTS.md`, `CLAUDE.md`, and this skill
+
+If the repository ships `tools/memory_context.py`, use it to refresh those layers before baseline, before forming the next hypothesis, and before starting a new related task.
+When an iteration teaches something reusable, record the mistake, the fix, and a prevention rule in the optional `memory` object in `improvement/ledger.jsonl`.
+
 ## Step 1: Create the task contract and execution plan
 
 Write or update `improvement/current-task.md` with:
@@ -61,17 +73,19 @@ Write or update `improvement/current-task.md` with:
 3. desired outcome
 4. non-goals
 5. execution plan with 3-7 concrete steps
-6. fast-loop evals
-7. full gates
-8. primary metric
-9. secondary metrics
-10. evaluation commands
-11. iteration budget
-12. rollback/checkpoint plan
-13. stop conditions
+6. memory refresh notes that point at working, episodic, learned, and procedural memory
+7. fast-loop evals
+8. full gates
+9. primary metric
+10. secondary metrics
+11. evaluation commands
+12. iteration budget
+13. rollback/checkpoint plan
+14. stop conditions
 
 Use the template in `improvement/templates/current-task.md` if present.
 If the repository ships `tools/bootstrap_task.py`, use it when that is the fastest way to scaffold a clean task contract from the template shape.
+If the repository ships `tools/memory_context.py`, run it and copy the most relevant reminders into the task contract's memory refresh section.
 
 Planning is mandatory for non-trivial use of this skill.
 Before baseline or meaningful edits, create a short execution plan.
@@ -87,6 +101,13 @@ If the task has both fast-loop evals and full gates, run whichever baseline is f
 Log the baseline in `improvement/ledger.jsonl` with iteration `0` and `kept: true`.
 
 ## Step 3: Form hypotheses
+
+Before generating hypotheses, refresh memory from:
+
+- the active task contract
+- the ledger history for the same or similar tasks
+- durable patterns that already survived earlier work
+- the procedural rules in the repository instructions
 
 Generate 2-5 plausible improvement hypotheses.
 Rank them by expected upside divided by risk and implementation cost.
@@ -125,9 +146,10 @@ For each iteration:
 5. log results in `improvement/ledger.jsonl`
 6. compare to the current best state
 7. keep or revert
-8. review loop state, remaining budget, and stop/continue signals before choosing the next hypothesis
+8. refresh memory, then review loop state, remaining budget, and stop/continue signals before choosing the next hypothesis
 
 If the repository ships `tools/loop_state.py`, use it after logging and before deciding whether to continue, replan, or stop.
+If the repository ships `tools/memory_context.py`, use it after logging to remind yourself which mistakes, fixes, and durable patterns should influence the next iteration.
 
 ### Fast-loop evals vs full gates
 
@@ -186,7 +208,7 @@ Append one JSON object per line to `improvement/ledger.jsonl`.
 Use this shape:
 
 ```json
-{"task_id":"2026-03-20-homepage-speed","iteration":1,"eval_tier":"fast+full","hypothesis":"lazy-load non-critical widgets","changes":["src/home/Hero.tsx","src/home/widgets.ts"],"hard_gates":{"build":"pass","tests":"pass","lint":"pass"},"primary_metric":{"name":"lcp_ms","baseline":2800,"value":2450,"direction":"lower_is_better"},"secondary_metrics":{"bundle_kb":312.4,"a11y_violations":0},"evidence":{"lcp_ms":"measured","bundle_kb":"measured","ux_risk":"inferred"},"kept":true,"summary":"Improved LCP without bundle regression."}
+{"task_id":"2026-03-20-homepage-speed","iteration":1,"eval_tier":"fast+full","hypothesis":"lazy-load non-critical widgets","changes":["src/home/Hero.tsx","src/home/widgets.ts"],"hard_gates":{"build":"pass","tests":"pass","lint":"pass"},"primary_metric":{"name":"lcp_ms","baseline":2800,"value":2450,"direction":"lower_is_better"},"secondary_metrics":{"bundle_kb":312.4,"a11y_violations":0},"evidence":{"lcp_ms":"measured","bundle_kb":"measured","ux_risk":"inferred"},"memory":{"mistakes":["Earlier draft skipped the broader regression gate."],"fixes":["Ran the full-gate check before keeping the optimization."],"prevention_rules":["Do not keep proxy-only wins when a required full gate exists."]},"kept":true,"summary":"Improved LCP without bundle regression."}
 ```
 
 ### Evidence labels
@@ -199,9 +221,18 @@ For each important claim, mark it as one of:
 
 Prefer measured evidence whenever possible.
 
+### Optional memory payload
+
+When an iteration teaches something likely to matter again, add a `memory` object with:
+
+- `mistakes`
+- `fixes`
+- `prevention_rules`
+
 If the repository ships a validator such as `tools/validate_ledger.py`, use it on `improvement/ledger.jsonl` after appending entries.
 If the repository also ships an example object such as `improvement/templates/ledger-entry.json`, validate that too when changing the documented logging contract.
 If the repository ships `tools/log_iteration.py`, prefer it for appending validated entries instead of hand-editing JSONL.
+If the repository ships `tools/memory_context.py`, use it to turn the ledger and patterns back into a usable brief before the next hypothesis or task.
 
 ## Fitness vector
 

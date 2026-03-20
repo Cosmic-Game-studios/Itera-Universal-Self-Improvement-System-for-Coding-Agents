@@ -49,3 +49,8 @@ Recommended format:
 - Context: bounded improvement works better when the team checks budget, recent failures, and the current best state instead of reflexively starting another hypothesis.
 - Signal: a small advisory loop-state review step makes stop conditions more real and reduces mindless churn.
 - Caveat: the review should inform judgment, not pretend that a heuristic can fully decide whether the task is done.
+
+## Pattern: log reusable mistakes and prevention rules, not just outcomes
+- Context: a self-improvement loop gets stronger when it remembers which errors happened, how they were corrected, and what rule should prevent them next time.
+- Signal: structured episodic-memory fields make it easier to turn one iteration's lesson into the next iteration's starting context instead of repeating the same avoidable mistake.
+- Caveat: keep the memory payload concise and grounded in explicit evidence; do not turn the ledger into a speculative diary.
