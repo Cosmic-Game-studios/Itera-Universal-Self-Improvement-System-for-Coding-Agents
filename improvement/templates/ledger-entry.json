@@ -1,0 +1,29 @@
+{
+  "task_id": "2026-03-20-example",
+  "iteration": 1,
+  "eval_tier": "fast+full",
+  "hypothesis": "example hypothesis",
+  "changes": ["src/example.ts"],
+  "hard_gates": {
+    "build": "pass",
+    "tests": "pass",
+    "lint": "pass"
+  },
+  "primary_metric": {
+    "name": "p95_ms",
+    "baseline": 120,
+    "value": 95,
+    "direction": "lower_is_better"
+  },
+  "secondary_metrics": {
+    "bundle_kb": 210.3,
+    "a11y_violations": 0
+  },
+  "evidence": {
+    "p95_ms": "measured",
+    "bundle_kb": "measured",
+    "ux_quality": "inferred"
+  },
+  "kept": true,
+  "summary": "Improved primary metric without regressions."
+}

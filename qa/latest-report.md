@@ -1,0 +1,42 @@
+# Skill System QA Report
+
+- Passed: 37
+- Failed: 0
+
+- [PASS] exists:AGENTS.md: required file present
+- [PASS] exists:CLAUDE.md: required file present
+- [PASS] exists:.agents/skills/swe-self-improve/SKILL.md: required file present
+- [PASS] exists:.claude/skills/swe-self-improve/SKILL.md: required file present
+- [PASS] exists:.agents/skills/swe-self-improve/agents/openai.yaml: required file present
+- [PASS] exists:.agents/skills/swe-self-improve/references/eval-catalog.md: required file present
+- [PASS] exists:.claude/skills/swe-self-improve/references/eval-catalog.md: required file present
+- [PASS] exists:global-templates/codex-home-AGENTS.md: required file present
+- [PASS] exists:global-templates/claude-home-CLAUDE.md: required file present
+- [PASS] exists:improvement/current-task.md: required file present
+- [PASS] exists:improvement/templates/current-task.md: required file present
+- [PASS] exists:improvement/templates/eval-contract.md: required file present
+- [PASS] codex_skill_has_name: Codex skill has name frontmatter
+- [PASS] codex_skill_has_description: Codex skill has description frontmatter
+- [PASS] claude_skill_manual_only: Claude skill is manual-only
+- [PASS] codex_manual_only: Codex skill disables implicit invocation
+- [PASS] claude_skill_under_500_lines: Claude skill has 264 lines
+- [PASS] project_claude_under_200_lines: Project CLAUDE.md has 62 lines
+- [PASS] agents_mentions_fast_loop: contains fast-loop
+- [PASS] claude_mentions_fast_loop: contains fast-loop
+- [PASS] skill_mentions_fast_loop: contains fast-loop
+- [PASS] template_has_fast_loop: contains fast-loop
+- [PASS] template_has_full_gates: contains full gates
+- [PASS] eval_contract_has_full_gates: contains full gates
+- [PASS] scenario:bugfix: keywords: bug, reproduction
+- [PASS] scenario:feature: keywords: feature, acceptance
+- [PASS] scenario:frontend: keywords: frontend, accessibility
+- [PASS] scenario:backend: keywords: backend, api
+- [PASS] scenario:ml: keywords: model training, validation metric
+- [PASS] scenario:perf: keywords: performance, benchmark
+- [PASS] scenario:refactor: keywords: refactor, behavior-lock
+- [PASS] scenario:infra: keywords: infra, deployment
+- [PASS] scenario:data: keywords: data, etl
+- [PASS] readme_mentions_global_paths: README documents global install paths
+- [PASS] global_templates_readme_exists: global template README exists
+- [PASS] agents_has_skill_fallback: AGENTS encodes fallback workflow when skill is not active
+- [PASS] claude_has_skill_fallback: CLAUDE encodes fallback workflow when skill is not active
